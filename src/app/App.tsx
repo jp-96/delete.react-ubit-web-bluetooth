@@ -1,31 +1,24 @@
+import React, { useEffect } from 'react';
 import Logo from './Logo';  // logo.svg ==> Log0.tsx
 //import './App.css'; // ==> ../index.html
-import {requestMicrobit, getServices} from 'microbit-web-bluetooth';
+import { useMicroBit } from './hooks/MicrobitWebBluetooth';
 
 function App() {
+  const {device, services, onClick} = useMicroBit(window.navigator.bluetooth);
 
-  function clickHandler() {
+  console.log(device);
 
-    function eventHandler(event) {
-      console.log(`${event.type}: ${JSON.stringify(event.detail, null, 2)}`);
-    }
-
-    const connectDevice = async () => {
-      //const device = await microbit.requestMicrobit(window.navigator.bluetooth);
-      const device = await requestMicrobit(window.navigator.bluetooth);
-      //const services = await microbit.getServices(device);
-      if (device) {
-        const services = await getServices(device);
-        console.log(services); 
-        if (services.buttonService) {
-          services.buttonService.addEventListener("buttonastatechanged", eventHandler);
-          services.buttonService.addEventListener("buttonbstatechanged", eventHandler);
-          console.log('buttonService!');
-        }
-      }
-    };
-    connectDevice();
+  function eventHandler(event) {
+    console.log(`${event.type}: ${JSON.stringify(event.detail, null, 2)}`);
   }
+
+  useEffect(()=>{
+    if (services && services.buttonService) {
+      services.buttonService.addEventListener("buttonastatechanged", eventHandler);
+      services.buttonService.addEventListener("buttonbstatechanged", eventHandler);
+      console.log('buttonService!');
+    }
+  }, [services]);
 
   return (
     <div className="App">
@@ -43,8 +36,9 @@ function App() {
           Learn React
         </a>
         <p>
-          <button onClick={clickHandler}>device</button>
+          <button onClick={onClick}>device</button>
         </p>
+        <p>{device?.name}</p>
       </header>
     </div>
   );
