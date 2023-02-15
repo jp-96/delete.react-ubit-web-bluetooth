@@ -1,5 +1,6 @@
 import {requestMicrobit, getServices, Services} from 'microbit-web-bluetooth';  // yarn add --dev microbit-web-bluetooth
-import { Types, useDevicesState } from './DevicesState';
+//import { Types, useDevicesState } from './DevicesState';
+import { Types, useDevicesState } from './DeviceState';
 
 export const useMicrobitBLE = (bluetooth: Bluetooth) => {
     const [state, dispatch] = useDevicesState();
@@ -34,7 +35,7 @@ export const useMicrobitBLE = (bluetooth: Bluetooth) => {
     };
 
     const connect = async (tag: string) => {
-        const device = state.devices[tag]?.device;
+        const device = state.device.device;
         if (device) {
             dispatch({tag, type: Types.CONNECT, device})
             connectInto(tag, device);
@@ -44,7 +45,7 @@ export const useMicrobitBLE = (bluetooth: Bluetooth) => {
     }
 
     const disconnect = async (tag: string) => {
-        const device = state.devices[tag]?.device;
+        const device = state.device.device;
         if (device && device.gatt) {
             dispatch({tag, type: Types.DISCONNECT,})
             device.gatt.disconnect();

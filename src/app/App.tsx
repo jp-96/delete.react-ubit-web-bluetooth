@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import Logo from './Logo';  // logo.svg ==> Log0.tsx
 //import './App.css'; // ==> ../index.html
-import { useMicroBit } from './hooks/MicrobitWebBluetooth';
 import { useMicrobitBLE } from './hooks/MicrobitBLE';
 
 function App() {
@@ -27,7 +26,7 @@ function App() {
           <button onClick={() => connect("TagA")}>Connect</button>
           <button onClick={() => disconnect("TagA")}>Disconnect</button>
         </p>
-        <p>{JSON.stringify(state)}</p>
+        <p>{state.device.stateInfo}</p>
       </header>
     </div>
   );
