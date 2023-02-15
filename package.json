@@ -8,11 +8,13 @@
     "@types/jest": "^27.5.0",
     "@types/react": "^18.0.12",
     "@types/react-dom": "^18.0.5",
+    "microbit-web-bluetooth": "^0.6.0",
     "parcel": "^2.6.0",
     "process": "^0.11.10",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "use-immer": "^0.8.1"
   },
   "scripts": {
     "test": "react-scripts test",
