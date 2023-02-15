@@ -1,25 +1,11 @@
 import React, { useEffect } from 'react';
 import Logo from './Logo';  // logo.svg ==> Log0.tsx
 //import './App.css'; // ==> ../index.html
-import { useMicroBit } from './hooks/MicrobitWebBluetooth';
+import { useMicrobitBLE } from './hooks/MicrobitBLE';
 
 function App() {
-  const {device, services, onClick} = useMicroBit(window.navigator.bluetooth);
-
-  console.log(device);
-
-  function eventHandler(event) {
-    console.log(`${event.type}: ${JSON.stringify(event.detail, null, 2)}`);
-  }
-
-  useEffect(()=>{
-    if (services && services.buttonService) {
-      services.buttonService.addEventListener("buttonastatechanged", eventHandler);
-      services.buttonService.addEventListener("buttonbstatechanged", eventHandler);
-      console.log('buttonService!');
-    }
-  }, [services]);
-
+  const {state, request, connect, disconnect} = useMicrobitBLE(window.navigator.bluetooth);
+  console.log('App/state: ', state)
   return (
     <div className="App">
       <header className="App-header">
@@ -36,9 +22,11 @@ function App() {
           Learn React
         </a>
         <p>
-          <button onClick={onClick}>device</button>
+          <button onClick={() => request("TagA")}>Request</button>
+          <button onClick={() => connect("TagA")}>Connect</button>
+          <button onClick={() => disconnect("TagA")}>Disconnect</button>
         </p>
-        <p>{device?.name}</p>
+        <p>{state.device.stateInfo}</p>
       </header>
     </div>
   );
