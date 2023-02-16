@@ -1,94 +1,94 @@
-import { useImmerReducer } from "use-immer";    // yarn add --dev use-immer
-import {requestMicrobit, getServices, Services} from 'microbit-web-bluetooth';  // yarn add --dev microbit-web-bluetooth
+import { useReducer } from 'react';
+import { Services } from 'microbit-web-bluetooth';  // yarn add --dev microbit-web-bluetooth
 
-export enum Types {
-    RESET = "RESET",
-    REQUEST = "REQUEST",
-    CONNECT = "CONNECT",
-    CANCELED = "CANCELED",
-    REJECTED = "REJECTED",
-    CONNECTED = "CONNECTED",
-    ERROR = "ERROR",
-    DISCONNECT = "DISCONNECT",
-    DISCONNECTED = "DISCONNECTED",
-};
+export const Types = {
+    RESET: "RESET",
+    REQUEST: "REQUEST",
+    CONNECT: "CONNECT",
+    CANCELED: "CANCELED",
+    REJECTED: "REJECTED",
+    CONNECTED: "CONNECTED",
+    ERROR: "ERROR",
+    DISCONNECT: "DISCONNECT",
+    DISCONNECTED: "DISCONNECTED",
+} as const;
 
 type ResetAction = {
     tag: string;
-    type: Types.RESET;
+    type: typeof Types.RESET;
 }
 
 type RequestAction = {
     tag: string;
-    type: Types.REQUEST;
+    type: typeof Types.REQUEST;
+    entry: () => void;
 }
 
 type ConnectAction = {
     tag: string;
-    type: Types.CONNECT;
-    device: BluetoothDevice;
-}
-
-type CanceledAction = {
-    tag: string;
-    type: Types.CANCELED;
+    type: typeof Types.CONNECT;
+    device?: BluetoothDevice;
+    entry: (device: BluetoothDevice) => void;
 }
 
 type RejectedAction = {
     tag: string;
-    type: Types.REJECTED;
+    type: typeof Types.REJECTED;
     reason: string;
 }
 
 type ConnectedAction = {
     tag: string;
-    type: Types.CONNECTED;
+    type: typeof Types.CONNECTED;
     services: Services;
+    entry: (services: Services) => void;
 }
 
 type ErrorAction = {
     tag: string;
-    type: Types.ERROR;
+    type: typeof Types.ERROR;
     reason: string;
 }
 
 type DisconnectAction = {
     tag: string;
-    type: Types.DISCONNECT;
+    type: typeof Types.DISCONNECT;
+    entry: (gatt: BluetoothRemoteGATTServer) => void;
 }
 
 type DisconnectedAction = {
     tag: string;
-    type: Types.DISCONNECTED;
+    type: typeof Types.DISCONNECTED;
+    entry: (services: Services) => void;
 }
-
 
 type Actions = ResetAction
              | RequestAction
              | ConnectAction
-             | CanceledAction
              | RejectedAction
              | ConnectedAction
              | ErrorAction
              | DisconnectAction
              | DisconnectedAction;
 
-enum DeviceState {
-    UNDEFINED = "UNDEFINED",
-    REQUEST = "REQUEST",
-    REJECTED = "REJECTED",
-    CONNECT = "CONNECT",
-    CONNECTED = "CONNECTED",
-    DISCONNECT = "DISCONNECT",
-    DISCONNECTED = "DISCONNECTED",
-}
+const DeviceState = {
+    UNDEFINED: "UNDEFINED",
+    REQUEST: "REQUEST",
+    REJECTED: "REJECTED",
+    CONNECT: "CONNECT",
+    CONNECTED: "CONNECTED",
+    DISCONNECT: "DISCONNECT",
+    DISCONNECTED: "DISCONNECTED",
+} as const;
+
+type DeviceStateType = typeof DeviceState[keyof typeof DeviceState];
 
 export type Device = {
     tag: string;
-    state: DeviceState;
+    state: DeviceStateType;
     stateInfo: string;
     device?: BluetoothDevice;
-    services?: any;
+    services?: Services;
 }
 
 export type State = {
@@ -103,75 +103,132 @@ const defaultState: State = {
     },
 };
 
-const reducer = (draft: State, action: Actions) => {
-    console.log('Action:', action);
+const reducer = (state: State, action: Actions): State => {
+    console.log("action:", action);
     const tag = action.tag;
+    let device = state.device;
     switch (action.type) {
         case Types.RESET:
-            if (draft.device.state in [DeviceState.REJECTED, DeviceState.DISCONNECT]) {
-                // to UNDEFINED
-                draft.device = {tag, state: DeviceState.UNDEFINED, stateInfo: '(undefined)'};
+            switch (device.state) {
+                case DeviceState.REJECTED:
+                case DeviceState.DISCONNECT:
+                    // to UNDEFINED
+                    device = {tag, state: DeviceState.UNDEFINED, stateInfo: '(undefined)'};
+                    break;
+                default:
+                    break;
             }
             break;
         case Types.REQUEST:
-            if (draft.device.state in [DeviceState.UNDEFINED, DeviceState.REJECTED]) {
-                // to REQUEST
-                draft.device = {tag, state: DeviceState.REQUEST, stateInfo: 'requestDevice()'};
+            switch (device.state) {
+                case DeviceState.UNDEFINED:
+                case DeviceState.REJECTED:
+                case DeviceState.DISCONNECTED:
+                    // to REQUEST
+                    action.entry();
+                    device = {tag, state: DeviceState.REQUEST, stateInfo: 'requestDevice()'};
+                    break;
+                default:
+                    break;
             }
             break;
         case Types.CONNECT:
-            if (draft.device.state in [DeviceState.REQUEST, DeviceState.DISCONNECTED]) {
-                // to CONNECT
-                draft.device = {tag, state: DeviceState.CONNECT, stateInfo: 'getServices()', device: action.device, };
-            }
-            break;
-        case Types.CANCELED:
-            if (draft.device.state in [DeviceState.REQUEST]) {
-                // to state
-                draft.device.state = DeviceState.REJECTED;
-                draft.device.stateInfo = "User Canceled"
+            switch (device.state) {
+                case DeviceState.REQUEST:
+                case DeviceState.DISCONNECTED:
+                    const bluetoothDevice = action.device ?? device.device;
+                    if (bluetoothDevice) {
+                        // to CONNECT
+                        action.entry(bluetoothDevice);
+                        device.state = DeviceState.CONNECT;
+                        device.stateInfo = 'getServices()';
+                        device.device = bluetoothDevice;
+                    } else {
+                        // to UNDEFINED
+                        device = {tag, state: DeviceState.UNDEFINED, stateInfo: 'Panic, BluetoothDevice.'};
+                    }
+                    break;
+                default:
+                    break;
             }
             break;
         case Types.REJECTED:
-            if (draft.device.state in [DeviceState.REQUEST]) {
-                // to state
-                draft.device.state = DeviceState.REJECTED;
-                draft.device.stateInfo = action.reason;
+            switch (device.state) {
+                case DeviceState.REQUEST:
+                    // to REJECTED
+                    device.state = DeviceState.REJECTED;
+                    device.stateInfo = action.reason;
+                    break;
+                default:
+                    break;
             }
             break;
         case Types.CONNECTED:
-            if (draft.device.state in [DeviceState.CONNECT]) {
-                // to state
-                draft.device.state = DeviceState.CONNECTED;
-                draft.device.stateInfo = 'Connected';
-                draft.device.services = action.services;
+            switch (device.state) {
+                case DeviceState.CONNECT:
+                    // to CONNECTED
+                    action.entry(action.services);
+                    device.state = DeviceState.CONNECTED;
+                    device.stateInfo = 'Connected';
+                    device.services = action.services;
+                    break;
+                default:
+                    break;
             }
             break;
         case Types.ERROR:
-            if (draft.device.state in [DeviceState.CONNECT]) {
-                // to state
-                draft.device.state = DeviceState.DISCONNECTED;
-                draft.device.stateInfo = action.reason;
+            switch (device.state) {
+                case DeviceState.CONNECT:
+                    // to DISCONNECTED
+                    device.state = DeviceState.DISCONNECTED;
+                    device.stateInfo = action.reason;
+                    break;
+                default:
+                    break;
             }
             break;
         case Types.DISCONNECT:
-            if (draft.device.state in [DeviceState.CONNECTED]) {
-                // to state
-                draft.device.state = DeviceState.DISCONNECT;
-                draft.device.stateInfo = 'gatt.disconnect()';
+            switch (device.state) {
+                case DeviceState.CONNECTED:
+                    const gatt = device.device?.gatt;
+                    if (gatt) {
+                        // to DISCONNECT
+                        action.entry(gatt);
+                        device.state = DeviceState.DISCONNECT;
+                        device.stateInfo = 'gatt.disconnect()';
+                    } else {
+                        // to UNDEFINED
+                        device = {tag, state: DeviceState.UNDEFINED, stateInfo: 'Panic, BluetoothRemoteGATTServer.'};
+                    }
+                    break;
+                default:
+                    break;
             }
             break;
         case Types.DISCONNECTED:
-            if (draft.device.state in [DeviceState.CONNECT, DeviceState.CONNECTED, DeviceState.DISCONNECT]) {
-                // to state
-                draft.device.state = DeviceState.DISCONNECTED;
-                draft.device.stateInfo = 'Disconnected';
-                draft.device.services = undefined;
+            switch (device.state) {
+                case DeviceState.CONNECT:
+                case DeviceState.CONNECTED:
+                case  DeviceState.DISCONNECT:
+                    // to DISCONNECTED
+                    if (device.services) {
+                        action.entry(device.services);
+                    }
+                    device.state = DeviceState.DISCONNECTED;
+                    device.stateInfo = 'Disconnected';
+                    device.services = undefined;
+                    break;
+                default:
+                    break;
             }
             break;
         default:
             break;
     }
+
+    const newState: State = { device };
+    console.log("(reducer): ", newState);
+    return newState;
 };
 
-export const useDevicesState = (initialState?: State) => useImmerReducer(reducer, initialState ?? defaultState);
+export const useDevicesState = (initialState?: State) => useReducer(reducer, initialState ?? defaultState);
