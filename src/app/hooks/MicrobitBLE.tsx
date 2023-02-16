@@ -1,6 +1,7 @@
 import {requestMicrobit, getServices, Services} from 'microbit-web-bluetooth';  // yarn add --dev microbit-web-bluetooth
 //import { Types, useDevicesState } from './DevicesState';
-import { Types, useDevicesState } from './DeviceState';
+//import { Types, useDevicesState } from './DeviceState';
+import { Types, useDevicesState } from './DeviceReducer';
 
 export const useMicrobitBLE = (bluetooth: Bluetooth) => {
     const [state, dispatch] = useDevicesState();
