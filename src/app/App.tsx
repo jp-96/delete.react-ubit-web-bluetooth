@@ -2,9 +2,13 @@ import React, { useEffect } from 'react';
 import Logo from './Logo';  // logo.svg ==> Log0.tsx
 //import './App.css'; // ==> ../index.html
 import { useMicrobitBLE } from './hooks/MicrobitBLE';
+import { Services } from 'microbit-web-bluetooth';
 
 function App() {
-  const {state, request, connect, disconnect} = useMicrobitBLE(window.navigator.bluetooth);
+  const bindServices = (services: Services, bind: Boolean) => {
+    console.log("bind:", bind, services);
+  };
+  const {state, request, connect, disconnect} = useMicrobitBLE(window.navigator.bluetooth, bindServices);
   console.log('App/state: ', state)
   return (
     <div className="App">
