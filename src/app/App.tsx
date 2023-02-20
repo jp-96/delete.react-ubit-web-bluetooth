@@ -1,15 +1,36 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Logo from './Logo';  // logo.svg ==> Log0.tsx
 //import './App.css'; // ==> ../index.html
-import { useMicrobitBLE } from './hooks/MicrobitBLE';
+//import { useMicrobitBLE } from './hooks/MicrobitBLE';
 import { Services } from 'microbit-web-bluetooth';
+import { useBindServicesCallback, useContextActor } from './StateMachine/MicrobitBluetoothMachineContext';
 
 function App() {
-  const bindServices = (services: Services, bind: Boolean) => {
-    console.log("bind:", bind, services);
+  
+  const [buttonA, setButtonA] = useState(0);
+  const [buttonB, setButtonB] = useState(0);
+
+  const listenerButtonA = (event: any) => {
+    console.log("Button A:", `${event.type}`, `${event.detail}`);
+    setButtonA(event.detail);
   };
-  const {state, request, connect, disconnect} = useMicrobitBLE(window.navigator.bluetooth, bindServices);
-  console.log('App/state: ', state)
+
+  const listenerButtonB = (event: any) => {
+    console.log("Button B:", `${event.type}`, `${event.detail}`);
+    setButtonB(event.detail);
+  };
+  useBindServicesCallback((services, binding) => {
+    if (binding) {
+      services.buttonService?.addEventListener("buttonastatechanged", listenerButtonA);
+      services.buttonService?.addEventListener("buttonbstatechanged", listenerButtonB);
+    } else {
+      //services.buttonService?.removeAllListeners("buttonastatechanged");
+      //services.buttonService?.removeAllListeners("buttonbstatechanged");
+    }
+  });
+
+  const [state, send] = useContextActor();
+
   return (
     <div className="App">
       <header className="App-header">
@@ -26,11 +47,16 @@ function App() {
           Learn React
         </a>
         <p>
-          <button onClick={() => request("TagA")}>Request</button>
-          <button onClick={() => connect("TagA")}>Connect</button>
-          <button onClick={() => disconnect("TagA")}>Disconnect</button>
+          <button onClick={() => send("RESET")}>RESET</button>
+          <button onClick={() => send("REQUEST")}>REQUEST</button>
+          <button onClick={() => send("CONNECT")}>Connect</button>
+          <button onClick={() => send("DISCONNECT")}>Disconnect</button>
         </p>
-        <p>{state.device.stateInfo}</p>
+        <p>{state.toStrings()}</p>
+        <p>
+          Button A: {`${buttonA}`}<br/>
+          Button B: {`${buttonB}`}
+        </p>
       </header>
     </div>
   );
