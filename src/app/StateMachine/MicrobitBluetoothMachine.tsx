@@ -15,7 +15,7 @@ export type Context = {
   microbitDevice?: BluetoothDevice;
   microbitServices?: Services;
   rejectedReason?: string;
-  errorReason?: string;
+  disconnectedReason?: string;
   tag: string;
   cb: Callbacks;
 };
@@ -27,7 +27,6 @@ export const createMicrobitBluetoothMachine = (bluetooth: Bluetooth, tag: string
     initial: "init",
     states: {
       init: {
-        entry: "deassignMicrobitDevice", // actions
         on: {
           REQUEST: "request"
         }
@@ -37,122 +36,151 @@ export const createMicrobitBluetoothMachine = (bluetooth: Bluetooth, tag: string
           id: "request-microbit",
           src: (context) => requestMicrobit((context as Context).bluetooth),
           onDone: {
-            target: "connect",
-            actions: "assignMicrobitDevice" // actions
+            target: "waiting",
+            actions: "assignMicrobitDevice"
           },
           onError: {
             target: "rejected",
-            actions: "assignRejectedReason" // actions
+            actions: "assignRejectedReason"
           }
         }
       },
       rejected: {
-        exit: "deassignRejectedReason", // actions
+        exit: "deassignRejectedReason",
         on: {
           REQUEST: "request",
           RESET: "init"
         }
       },
-      connect: {
+      waiting: {
         invoke: {
           id: "get-services",
           src: (context) => getServices((context as Context).microbitDevice!),
           onDone: {
             target: "connected",
-            actions: "assignMicrobitServices" // actions
+            actions: "assignMicrobitServices"
           },
           onError: {
             target: "disconnected",
-            actions: "assignConnectErrorReason" // actions
+            actions: "assignDisconnectedReason"
           }
         },
         on: {
-          DISCONNECTED: "disconnected"
+          LOST: {
+            target: "disconnected",
+            actions: assign({
+              disconnectedReason: "Delayed disconnection."
+            }),
+          }
         }
       },
       connected: {
-        entry: "callbackServicesBind", // actions
-        exit: "callbackServicesUnbind", // actions
+        entry: "bindServices",
+        exit: ["unbindServices", "deassignMicrobitServices"],
         on: {
-          DISCONNECT: "disconnect",
-          DISCONNECTED: "disconnected"
+          DISCONNECT: "disconnecting",
+          LOST: {
+            target: "disconnected",
+            actions: assign({
+              disconnectedReason: "GATT Server disconnect (by Peripheral)."
+            }),
+          }
         }
       },
-      disconnect: {
-        entry: "gattDissconnect", // actions
+      disconnecting: {
+        entry: "gattDissconnect",
         on: {
-          DISCONNECTED: "disconnected"
+          LOST: {
+            target: "disconnected",
+            actions: assign({
+              disconnectedReason: "GATT Client disconnect (by Central)."
+            }),
+          }
         }
       },
       disconnected: {
         exit: [
-          "deassignRejectedReason", // actions
-          "deassignErrorReason" // actions
+          "deassignRejectedReason",
+          "deassignDisconnectedReason"
         ],
         on: {
-          CONNECT: "connect",
-          REQUEST: "request",
-          RESET: "init"
+          CONNECT: "waiting",
+          REQUEST: "subrequest",
+          RESET: {
+            target: "init",
+            actions: "deassignMicrobitDevice"
+          }
+        }
+      },
+      subrequest: {
+        invoke: {
+          id: "request-microbit",
+          src: (context) => requestMicrobit((context as Context).bluetooth),
+          onDone: {
+            target: "waiting",
+            actions: ["deassignMicrobitDevice", "assignMicrobitDevice"]
+          },
+          onError: {
+            target: "disconnected",
+            actions: "assignRejectedReason"
+          }
         }
       }
     }
   },
-  // options
+  // options: { actions }
   {
     actions: {
       assignMicrobitDevice: assign({
         microbitDevice: (context, event) => {
-          console.log("assignMicrobitDevice:", JSON.stringify(event));
-          const device: BluetoothDevice = (event as DoneInvokeEvent<
-            BluetoothDevice
-          >).data;
-          const sendDisconnect = (context as Context).cb.sendDisconnect;
-          if (sendDisconnect) {
-            device.addEventListener("gattserverdisconnected", () => {
-              sendDisconnect();
-            });
-          }
+          // [new device] addEventListener and assign
+          const device = (event as DoneInvokeEvent<BluetoothDevice>).data;
+          device.addEventListener("gattserverdisconnected", () => {
+            (context as Context).cb.sendDisconnect!();
+          });
           return device;
-        }
+        },
       }),
       deassignMicrobitDevice: assign({
-        microbitDevice: () => undefined
+        microbitDevice: (context) => {
+          // [old device] removeEventListener and deassign
+          const device = (context as Context).microbitDevice;
+          device?.removeEventListener("gattserverdisconnected", null);
+          return undefined;
+        }
       }),
       assignRejectedReason: assign({
-        rejectedReason: (_, event) =>
-          // (context, event) => { return event.data }
-          (event as DoneInvokeEvent<Error>).data.message
+        rejectedReason: (_, event) => (event as DoneInvokeEvent<Error>).data.message
       }),
       deassignRejectedReason: assign({
-        rejectedReason: () => undefined
+        rejectedReason: undefined
       }),
       assignMicrobitServices: assign({
-        microbitServices: (_, event) =>
-          (event as DoneInvokeEvent<Services>).data
+        microbitServices: (_, event) => (event as DoneInvokeEvent<Services>).data
       }),
       deassignMicrobitServices: assign({
-        microbitServices: () => undefined
-      }),
-      assignErrorReason: assign({
-        errorReason: (_, event) =>
-          // (context, event) => { return event.data }
-          (event as DoneInvokeEvent<Error>).data.message
-      }),
-      deassignErrorReason: assign({
-        errorReason: (_, event) => undefined
+        microbitServices: undefined
       }),
       gattDissconnect: (context: Context) => {
-        context.microbitDevice?.gatt?.disconnect();
+        context.microbitDevice?.gatt?.disconnect()
       },
-      callbackServicesBind: (context: Context) => {
+      assignDisconnectedReason : assign({
+        disconnectedReason: (_, event) => (event as DoneInvokeEvent<Error>).data.message
+      }),
+      deassignDisconnectedReason: assign({
+        disconnectedReason: undefined
+      }),
+      bindServices: (context: Context) => {
         const bindServices = (context as Context).cb.bindServices;
         if (bindServices) {
+          // binding - true: addEventListener
           bindServices((context as Context).microbitServices!, true);
         }
       },
-      callbackServicesUnbind: (context: Context) => {
+      unbindServices: (context: Context) => {
         const bindServices = (context as Context).cb.bindServices;
         if (bindServices) {
+          // binding - false: removeEventListener
           bindServices((context as Context).microbitServices!, false);
         }
       }
@@ -160,7 +188,7 @@ export const createMicrobitBluetoothMachine = (bluetooth: Bluetooth, tag: string
   },
   // initial context
   {
-    bluetooth, 
+    bluetooth,
     tag,
     cb: {},
   }
