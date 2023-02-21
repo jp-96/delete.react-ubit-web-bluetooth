@@ -40,7 +40,7 @@ function App() {
       });
     }
     return serviceNames;
-  })().map((serviceName) => <li>{serviceName}</li>);
+  })().map((serviceName) => <li key={serviceName}>{serviceName}</li>);
 
   return (
     <div className="App">
@@ -68,7 +68,7 @@ function App() {
           <br/>
           Button A: {`${buttonA}`} / Button B: {`${buttonB}`}
         </p>
-        {listItems.length > 0 && <p>services:<ul>{listItems}</ul></p>}
+        {listItems.length > 0 && <div>services:<ul>{listItems}</ul></div>}
         <p>
           {state.context.rejectedReason && ("rejected: " + state.context.rejectedReason)}<br/>
           {state.context.disconnectedReason && ( "disconnected: " + state.context.disconnectedReason)}
