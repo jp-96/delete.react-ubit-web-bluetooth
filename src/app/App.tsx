@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import Logo from './Logo';  // logo.svg ==> Log0.tsx
 //import './App.css'; // ==> ../index.html
-//import { useMicrobitBLE } from './hooks/MicrobitBLE';
-//import { Services } from 'microbit-web-bluetooth';
 import { useBindServicesCallback, useContextActor } from './StateMachine/MicrobitBluetoothMachineContext';
 
 function App() {
@@ -31,7 +29,18 @@ function App() {
 
   const [state, send] = useContextActor();
 
-  const listItems = state.context.microbitServices ? Object.keys(state.context.microbitServices).map((serviceName) => <li>{serviceName}</li> ) : undefined;
+  const listItems =  (() => {
+    const serviceNames: string[] = [];
+    const services = state.context.microbitServices;
+    if (services) {
+      Object.keys(services).forEach((key) => {
+        if (services[key]) {
+          serviceNames.push(key);
+        }
+      });
+    }
+    return serviceNames;
+  })().map((serviceName) => <li>{serviceName}</li>);
 
   return (
     <div className="App">
@@ -54,13 +63,12 @@ function App() {
           <button onClick={() => send("REQUEST")}>REQUEST</button>
           <button onClick={() => send("CONNECT")}>Connect</button>
           <button onClick={() => send("DISCONNECT")}>Disconnect</button>
+          <br/>
+          {state.context.microbitDevice?.name && ("[" + state.context.microbitDevice.name + "]")}
+          <br/>
+          Button A: {`${buttonA}`} / Button B: {`${buttonB}`}
         </p>
-        <p>
-          {state.context.microbitDevice?.name && ("[" + state.context.microbitDevice.name + "]")}<br/>
-          Button A: {`${buttonA}`}<br/>
-          Button B: {`${buttonB}`}
-        </p>
-        {listItems && <p>services:<ul>{listItems}</ul></p>}
+        {listItems.length > 0 && <p>services:<ul>{listItems}</ul></p>}
         <p>
           {state.context.rejectedReason && ("rejected: " + state.context.rejectedReason)}<br/>
           {state.context.disconnectedReason && ( "disconnected: " + state.context.disconnectedReason)}

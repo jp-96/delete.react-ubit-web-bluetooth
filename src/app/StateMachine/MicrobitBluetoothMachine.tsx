@@ -1,5 +1,5 @@
-import { Machine, assign, DoneInvokeEvent } from "xstate";
-import { getServices, requestMicrobit, Services } from "microbit-web-bluetooth";
+import { Machine, assign, DoneInvokeEvent } from "xstate"; // yarn add --dev xstate @xstate/react
+import { getServices, requestMicrobit, Services } from "microbit-web-bluetooth"; // yarn add --dev microbit-web-bluetooth
 
 export type SendDisconnectCallback = () => void;
 

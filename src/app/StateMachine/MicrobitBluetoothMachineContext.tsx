@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { createActorContext } from '@xstate/react';
+import { createActorContext } from '@xstate/react'; // yarn add --dev xstate @xstate/react
 import { createMicrobitBluetoothMachine, BindServicesCallback } from './MicrobitBluetoothMachine';
 
 const MicrobitBluetoothMachineContext = createActorContext(createMicrobitBluetoothMachine(window.navigator.bluetooth, 'MicrobitBluetoothMachineContext'));
