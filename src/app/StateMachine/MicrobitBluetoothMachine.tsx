@@ -3,11 +3,6 @@ import { getServices, requestMicrobit, Services } from "microbit-web-bluetooth";
 
 export type SendDisconnectCallback = () => void;
 
-/**
- * Callbacked function type of bind/unbind eventlistener for micro:bit bluetooth services.
- * @param services: target of micro:bit bluetooth services
- * @param binding: (true) - bind eventlistener, (false) - bind eventlistener
- */
 export type BindServicesCallback = (services: Services, binding: boolean) => void;
 
 type Callbacks = {
