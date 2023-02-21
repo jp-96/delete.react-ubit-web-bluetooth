@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Logo from './Logo';  // logo.svg ==> Log0.tsx
 //import './App.css'; // ==> ../index.html
-import { useBindServicesCallback, useContextActor } from './StateMachine/MicrobitBluetoothMachineContext';
+import { useBindServicesCallback, useMicrobitActor } from './uBit/StateMachineContext';
 
 function App() {
   
@@ -27,7 +27,7 @@ function App() {
     }
   });
 
-  const [state, send] = useContextActor();
+  const [state, send] = useMicrobitActor();
 
   const listItems =  (() => {
     const serviceNames: string[] = [];

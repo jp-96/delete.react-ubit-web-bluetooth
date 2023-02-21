@@ -1,4 +1,4 @@
-import { Machine, assign, DoneInvokeEvent } from "xstate"; // yarn add --dev xstate @xstate/react
+import { assign, createMachine, DoneInvokeEvent } from "xstate"; // yarn add --dev xstate @xstate/react
 import { getServices, requestMicrobit, Services } from "microbit-web-bluetooth"; // yarn add --dev microbit-web-bluetooth
 
 export type SendDisconnectCallback = () => void;
@@ -20,7 +20,7 @@ export type Context = {
   cb: Callbacks;
 };
 
-export const createMicrobitBluetoothMachine = (bluetooth: Bluetooth, tag: string = "") => Machine<Context>(
+export const createBluetoothMachine = (bluetooth: Bluetooth, tag: string = "") => createMachine<Context>(
   // config
   {
     id: "mibrobit-bluetooth",
