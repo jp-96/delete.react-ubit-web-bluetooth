@@ -1,5 +1,5 @@
-import { Machine, assign, DoneInvokeEvent } from "xstate";
-import { getServices, requestMicrobit, Services } from "microbit-web-bluetooth";
+import { assign, createMachine, DoneInvokeEvent } from "xstate"; // yarn add --dev xstate @xstate/react
+import { getServices, requestMicrobit, Services } from "microbit-web-bluetooth"; // yarn add --dev microbit-web-bluetooth
 
 export type SendDisconnectCallback = () => void;
 
@@ -20,11 +20,12 @@ export type Context = {
   cb: Callbacks;
 };
 
-export const createMicrobitBluetoothMachine = (bluetooth: Bluetooth, tag: string = "") => Machine<Context>(
+export const createBluetoothMachine = (bluetooth: Bluetooth, tag: string = "") => createMachine<Context>(
   // config
   {
     id: "mibrobit-bluetooth",
-    initial: "init",
+    context: { bluetooth, tag, cb: {}, }, // initial context
+    initial: "init", 
     states: {
       init: {
         on: {
@@ -185,11 +186,5 @@ export const createMicrobitBluetoothMachine = (bluetooth: Bluetooth, tag: string
         }
       }
     }
-  },
-  // initial context
-  {
-    bluetooth,
-    tag,
-    cb: {},
   }
 );
