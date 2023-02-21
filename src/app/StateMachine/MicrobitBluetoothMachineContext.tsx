@@ -5,9 +5,10 @@ import { createMicrobitBluetoothMachine, BindServicesCallback } from './Microbit
 const MicrobitBluetoothMachineContext = createActorContext(createMicrobitBluetoothMachine(window.navigator.bluetooth, 'MicrobitBluetoothMachineContext'));
 
 export const useContextActor = () => MicrobitBluetoothMachineContext.useActor();
+export const useContextActorRef = () => MicrobitBluetoothMachineContext.useActorRef();
 
 export function useBindServicesCallback(cb: BindServicesCallback) {
-    const [state] = MicrobitBluetoothMachineContext.useActor();
+    const [state] = useContextActor();
     useEffect(() => {
         console.log("useBindServicesCallback: set")
         state.context.cb.bindServices = cb;
@@ -18,22 +19,12 @@ export function useBindServicesCallback(cb: BindServicesCallback) {
     }, []);
 }
 
-export default function MicrobitBluetoothMachineContextProvider({ children }) {
-    return (
-        <MicrobitBluetoothMachineContext.Provider>
-            <MicrobitBluetoothMachineContextProviderInitialization>
-                {children}
-            </MicrobitBluetoothMachineContextProviderInitialization>
-        </MicrobitBluetoothMachineContext.Provider>
-    );
-}
-
 function MicrobitBluetoothMachineContextProviderInitialization({ children }) {
-    const service = MicrobitBluetoothMachineContext.useActorRef();
+    const service = useContextActorRef();
     useEffect(() => {
         const context = service.getSnapshot()?.context;
         console.log("MicrobitBluetoothMachineContextProviderInitialization: set");
-        context && (context.cb.sendDisconnect = () => service.send("DISCONNECTED"));
+        context && (context.cb.sendDisconnect = () => service.send("LOST"));
         return () => {
             console.log("MicrobitBluetoothMachineContextProviderInitialization: unset")
             context && (context.cb.sendDisconnect = undefined);
@@ -44,4 +35,14 @@ function MicrobitBluetoothMachineContextProviderInitialization({ children }) {
             {children}
         </React.Fragment>
     )
+}
+
+export default function MicrobitBluetoothMachineContextProvider({ children }) {
+    return (
+        <MicrobitBluetoothMachineContext.Provider>
+            <MicrobitBluetoothMachineContextProviderInitialization>
+                {children}
+            </MicrobitBluetoothMachineContextProviderInitialization>
+        </MicrobitBluetoothMachineContext.Provider>
+    );
 }
