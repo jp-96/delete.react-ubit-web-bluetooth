@@ -24,7 +24,8 @@ export const createBluetoothMachine = (bluetooth: Bluetooth, tag: string = "") =
   // config
   {
     id: "mibrobit-bluetooth",
-    initial: "init",
+    context: { bluetooth, tag, cb: {}, }, // initial context
+    initial: "init", 
     states: {
       init: {
         on: {
@@ -185,11 +186,5 @@ export const createBluetoothMachine = (bluetooth: Bluetooth, tag: string = "") =
         }
       }
     }
-  },
-  // initial context
-  {
-    bluetooth,
-    tag,
-    cb: {},
   }
 );
