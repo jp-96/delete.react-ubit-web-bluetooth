@@ -1,7 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Logo from './Logo';  // logo.svg ==> Log0.tsx
 //import './App.css'; // ==> ../index.html
-import { MicroBitButton, MicroBitDevice, Services, ServicesEffector, useMicrobitActor } from './Microbit';
+import {
+  MicroBitButton,
+  MicroBitDevice,
+  Services,
+  ServicesEffector,
+  useMicrobitActor
+} from './microbit-web-bluetooth-react';
 
 function App() {
   const [state, send] = useMicrobitActor();
@@ -73,16 +79,16 @@ function App() {
           {"[" + state.toStrings() + "]"}<br />
           <button onClick={() => send("RESET")}>RESET</button>
           <button onClick={() => send("REQUEST")}>REQUEST</button>
-          <button onClick={() => send("CONNECT")}>Connect</button>
-          <button onClick={() => send("DISCONNECT")}>Disconnect</button>
+          <button onClick={() => send("CONNECT")}>CONNECT</button>
+          <button onClick={() => send("DISCONNECT")}>DISCONNECT</button>
           <br />
           name: <MicroBitDevice display="name" />
           <br />
           id: <MicroBitDevice display="id" />
           <br />
-          Button a: <MicroBitButton watching='a' /> {stateA}
+          Button A: <MicroBitButton watching='a' /> {stateA}
           <br />
-          Button b: <MicroBitButton watching='b' /> {stateB}
+          Button B: <MicroBitButton watching='b' /> {stateB}
         </p>
         {listItems.length > 0 && <div>services:<ul>{listItems}</ul></div>}
         <p>
