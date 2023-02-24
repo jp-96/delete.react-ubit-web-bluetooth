@@ -56,7 +56,7 @@ export function ServicesEffector(state: StateWithContext, cb: ServicesCallback):
         const conn = state.context.conn;
         conn.addServicesCallback(cb);
         return () => {
-            conn.addServicesCallback(cb);
+            conn.removeServicesCallback(cb);
         };
     }
 }

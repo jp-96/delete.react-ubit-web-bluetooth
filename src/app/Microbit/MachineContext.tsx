@@ -16,14 +16,14 @@ const defalutGattServerDisconnectedEventCallback: GattServerDisconnectedEventCal
 
 export class Connection {
 
-    constructor (bluetooth: Bluetooth = window.navigator.bluetooth) {
-        this.bluetooth = bluetooth;    
+    constructor(bluetooth: Bluetooth = window.navigator.bluetooth) {
+        this.bluetooth = bluetooth;
     }
 
     bluetooth: Bluetooth;
 
     private gattServerDisconnectedEventCallback: GattServerDisconnectedEventCallback = defalutGattServerDisconnectedEventCallback;
-    
+
     private deviceCallbacks: DeviceCallback[] = [];
     private device?: BluetoothDevice;
 
@@ -74,7 +74,7 @@ export class Connection {
     private updateDeviceCallbacksAll(device: BluetoothDevice, binding: boolean) {
         this.deviceCallbacks.map(f => f(device, binding));
     }
-    
+
     private setDevice(device?: BluetoothDevice) {
         const gattserverdisconnected = "gattserverdisconnected";
         if (this.device) {

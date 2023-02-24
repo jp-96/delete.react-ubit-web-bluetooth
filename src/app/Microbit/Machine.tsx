@@ -6,7 +6,7 @@ export const createMicrobitMachine = (conn: Connection) => createMachine<Context
   {
     id: "mibrobit-bluetooth",
     context: { conn, }, // initial context
-    initial: "init", 
+    initial: "init",
     states: {
       init: {
         on: {
@@ -112,7 +112,7 @@ export const createMicrobitMachine = (conn: Connection) => createMachine<Context
       deassignDisconnectedReason: assign({
         disconnectedReason: undefined
       }),
-      assignDisconnectedReasonOnError : assign({
+      assignDisconnectedReasonOnError: assign({
         disconnectedReason: (_, event) => (event as DoneInvokeEvent<Error>).data.message
       }),
       assignDisconnectedReasonByDelayed: assign({
