@@ -2,9 +2,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Logo from './Logo';  // logo.svg ==> Log0.tsx
 //import './App.css'; // ==> ../index.html
 import { Services } from 'microbit-web-bluetooth';
-import { useMicrobitActor } from './MicrobitWebBluetoothReactHooks/MachineReact';
-import MicroBitDeviceName from './MicrobitWebBluetoothReactHooks/Components/MicrobitDeviceName';
-import MicroBitButton from './MicrobitWebBluetoothReactHooks/Components/MicrobitButton';
+import { useMicrobitActor } from './Microbit/MachineReact';
+import MicroBitDeviceName from './Microbit/Components/MicrobitDeviceName';
+import MicroBitButton from './Microbit/Components/MicrobitButton';
 
 function App() {
   const [state, send] = useMicrobitActor();
