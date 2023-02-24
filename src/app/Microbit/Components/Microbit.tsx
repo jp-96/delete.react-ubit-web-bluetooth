@@ -11,14 +11,13 @@ export const useMicrobitActorRef = () => MicrobitActorContext.useActorRef();
 
 function MicrobitContextProviderInitialization({ children }) {
     const [state, send] = useMicrobitActor();
-    const cb = useCallback<GattServerDisconnectedEventCallback>(() => send("LOST"), []);
     useEffect(() => {
         const conn = state.context.conn;
-        conn.setGattServerDisconnectedEventCallback(cb);
+        conn.setGattServerDisconnectedEventCallback(() => send("LOST"));
         return () => {
             conn.setGattServerDisconnectedEventCallback(undefined);
         };
-    }, [cb]);
+    }, []);
     return (
         <React.Fragment>
             {children}
@@ -43,9 +42,18 @@ type StateWithContext = State<Context, any, any, any, any>;
 
 export function DeviceEffector(state: StateWithContext, cb: DeviceCallback): EffectCallback {
     return () => {
+        /**
+         * NOTE:
+         * When StrictMode is enabled, React intentionally double-invokes
+         * effects (mount -> unmount -> mount) for newly mounted components. 
+         * https://github.com/reactwg/react-18/discussions/19
+         */
+        
+        //console.log("DeviceEffector init:", cb)
         const conn = state.context.conn;
         conn.addDeviceCallback(cb);
         return () => {
+            //console.log("DeviceEffector deinit:", cb)
             conn.removeDeviceCallback(cb);
         };
     }
@@ -53,9 +61,18 @@ export function DeviceEffector(state: StateWithContext, cb: DeviceCallback): Eff
 
 export function ServicesEffector(state: StateWithContext, cb: ServicesCallback): EffectCallback {
     return () => {
+        /**
+         * NOTE:
+         * When StrictMode is enabled, React intentionally double-invokes
+         * effects (mount -> unmount -> mount) for newly mounted components. 
+         * https://github.com/reactwg/react-18/discussions/19
+         */
+
+        //console.log("ServicesEffector init:", cb)
         const conn = state.context.conn;
         conn.addServicesCallback(cb);
         return () => {
+            //console.log("ServicesEffector deinit:", cb)
             conn.removeServicesCallback(cb);
         };
     }

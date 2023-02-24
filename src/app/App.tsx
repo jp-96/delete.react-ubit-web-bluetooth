@@ -12,26 +12,26 @@ function App() {
   const [stateB, setStateB] = useState("");
   const [services, setServices] = useState<Services>({});
 
-
-  const listenerButtonA = useCallback((event: any) => {
-    console.log("Button A:", `${event.type}`, `${event.detail}`);
-    if (event.detail === 2) {
-      setStateA("(Long Press A)");
-    } else {
-      setStateA("")
-    }
-  }, []);
-
-  const listenerButtonB = useCallback((event: any) => {
-    console.log("Button B:", `${event.type}`, `${event.detail}`);
-    if (event.detail === 2) {
-      setStateB("(Long Press B)");
-    } else {
-      setStateB("")
-    }
-  }, []);
-
   const cb = useCallback((services, binding) => {
+
+    const listenerButtonA = (event: any) => {
+      console.log("Button A:", `${event.type}`, `${event.detail}`);
+      if (event.detail === 2) {
+        setStateA("(Long Press A)");
+      } else {
+        setStateA("")
+      }
+    };
+
+    const listenerButtonB = (event: any) => {
+      console.log("Button B:", `${event.type}`, `${event.detail}`);
+      if (event.detail === 2) {
+        setStateB("(Long Press B)");
+      } else {
+        setStateB("")
+      }
+    };
+
     if (binding) {
       services.buttonService?.addEventListener("buttonastatechanged", listenerButtonA);
       services.buttonService?.addEventListener("buttonbstatechanged", listenerButtonB);

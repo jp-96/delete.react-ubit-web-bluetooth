@@ -14,11 +14,10 @@ export default function MicroBitButton(props: Props) {
     const [state] = useMicrobitActor();
     const [button, setButton] = useState(0);
 
-    const listenerButton = useCallback((event: CustomEvent<any>) => {
-        setButton(event.detail);
-    }, []);
-
-    const cb = useCallback<ServicesCallback>((services, binding) => {
+    const cb = useCallback<ServicesCallback>((services, binding) => {        
+        const listenerButton = (event: CustomEvent<any>) => {
+            setButton(event.detail);
+        };
         const eventType = props.watching === 'a' ? 'buttonastatechanged' : 'buttonbstatechanged';
         if (binding) {
             services.buttonService?.addEventListener(eventType, listenerButton);
