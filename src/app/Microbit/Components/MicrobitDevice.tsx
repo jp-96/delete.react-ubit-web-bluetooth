@@ -10,7 +10,7 @@ type Props = {
     display: PropertyType;
 }
 
-export default function MicroBitDevice(props: Props) {
+export function MicroBitDevice(props: Props) {
     const [state] = useMicrobitActor();
     const [value, setValue] = useState<string | undefined>(undefined);
 
