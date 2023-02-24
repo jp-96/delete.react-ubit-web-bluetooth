@@ -1,11 +1,10 @@
-import { getServices, Services } from "microbit-web-bluetooth";
+import { getServices, requestMicrobit, Services } from "microbit-web-bluetooth";
 
 export type GattServerDisconnectedEventCallback = () => void;
 export type DeviceCallback = (device: BluetoothDevice, binding: boolean) => void;
 export type ServicesCallback = (services: Services, binding: boolean) => void;
 
 export type Context = {
-    bluetooth: Bluetooth;
     conn: Connection;
     rejectedReason?: string;
     disconnectedReason?: string;
@@ -16,6 +15,13 @@ const defalutGattServerDisconnectedEventCallback: GattServerDisconnectedEventCal
 };
 
 export class Connection {
+
+    constructor (bluetooth: Bluetooth = window.navigator.bluetooth) {
+        this.bluetooth = bluetooth;    
+    }
+
+    bluetooth: Bluetooth;
+
     private gattServerDisconnectedEventCallback: GattServerDisconnectedEventCallback = defalutGattServerDisconnectedEventCallback;
     
     private deviceCallbacks: DeviceCallback[] = [];
@@ -26,6 +32,15 @@ export class Connection {
 
     public setGattServerDisconnectedEventCallback(cb?: GattServerDisconnectedEventCallback) {
         this.gattServerDisconnectedEventCallback = cb ?? defalutGattServerDisconnectedEventCallback;
+    }
+
+    public async requestDevice() {
+        const device = await requestMicrobit(this.bluetooth);
+        this.setDevice(device);
+    }
+
+    public resetDevice() {
+        this.setDevice(undefined);
     }
 
     public async getServices() {
@@ -51,7 +66,7 @@ export class Connection {
         this.deviceCallbacks.map(f => f(device, binding));
     }
     
-    public setDevice(device?: BluetoothDevice) {
+    private setDevice(device?: BluetoothDevice) {
         if (this.device) {
             // unbind
             this.updateDeviceCallbacksAll(this.device, false);

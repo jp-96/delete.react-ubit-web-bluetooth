@@ -3,7 +3,7 @@ import { createActorContext } from '@xstate/react'; // yarn add --dev xstate @xs
 import { createMicrobitMachine } from './Machine';
 import { Connection } from './MachineContext';
 
-const MicrobitActorContext = createActorContext(createMicrobitMachine(window.navigator.bluetooth, new Connection()));
+const MicrobitActorContext = createActorContext(createMicrobitMachine(new Connection(window.navigator.bluetooth)));
 
 export const useMicrobitActor = () => MicrobitActorContext.useActor();
 export const useMicrobitActorRef = () => MicrobitActorContext.useActorRef();
