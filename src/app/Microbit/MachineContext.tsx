@@ -76,15 +76,16 @@ export class Connection {
     }
     
     private setDevice(device?: BluetoothDevice) {
+        const gattserverdisconnected = "gattserverdisconnected";
         if (this.device) {
             // unbind
             this.updateDeviceCallbacksAll(this.device, false);
-            this.device.removeEventListener("gattserverdisconnected", this.gattServerDisconnectedEventCallback);
+            this.device.removeEventListener(gattserverdisconnected, this.gattServerDisconnectedEventCallback);
         }
         this.device = device;
         if (this.device) {
             // bind
-            this.device.addEventListener("gattserverdisconnected", this.gattServerDisconnectedEventCallback);
+            this.device.addEventListener(gattserverdisconnected, this.gattServerDisconnectedEventCallback);
             this.updateDeviceCallbacksAll(this.device, true);
         }
     }
