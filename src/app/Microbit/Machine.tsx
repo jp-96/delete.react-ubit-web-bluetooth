@@ -2,7 +2,7 @@ import { assign, createMachine, DoneInvokeEvent } from "xstate"; // yarn add --d
 import { getServices, requestMicrobit, Services } from "microbit-web-bluetooth"; // yarn add --dev microbit-web-bluetooth
 import { Connection, Context } from "./MachineContext";
 
-export const createBluetoothMachine = (bluetooth: Bluetooth, conn: Connection) => createMachine<Context>(
+export const createMicrobitMachine = (bluetooth: Bluetooth, conn: Connection) => createMachine<Context>(
   // config
   {
     id: "mibrobit-bluetooth",

@@ -1,6 +1,6 @@
 import { getServices, Services } from "microbit-web-bluetooth";
 
-export type GattServerDisconnectedCallback = () => void;
+export type GattServerDisconnectedEventCallback = () => void;
 export type DeviceCallback = (device: BluetoothDevice, binding: boolean) => void;
 export type ServicesCallback = (services: Services, binding: boolean) => void;
 
@@ -11,8 +11,12 @@ export type Context = {
     disconnectedReason?: string;
 };
 
+const defalutGattServerDisconnectedEventCallback: GattServerDisconnectedEventCallback = () => {
+    console.log("missing GattServerDisconnectedEventCallback.");
+};
+
 export class Connection {
-    private gattServerDisconnected?: GattServerDisconnectedCallback;
+    private gattServerDisconnectedEventCallback: GattServerDisconnectedEventCallback = defalutGattServerDisconnectedEventCallback;
     
     private deviceCallbacks: DeviceCallback[] = [];
     private device?: BluetoothDevice;
@@ -20,9 +24,8 @@ export class Connection {
     private servicesCallbacks: ServicesCallback[] = [];
     private services?: Services;
 
-    public setGattServerDisconnectedCallback(cb?: GattServerDisconnectedCallback) {
-        console.log("setGattServerDisconnectedCallback()", cb);
-        this.gattServerDisconnected = cb;
+    public setGattServerDisconnectedEventCallback(cb?: GattServerDisconnectedEventCallback) {
+        this.gattServerDisconnectedEventCallback = cb ?? defalutGattServerDisconnectedEventCallback;
     }
 
     public async getServices() {
@@ -52,12 +55,12 @@ export class Connection {
         if (this.device) {
             // unbind
             this.updateDeviceCallbacksAll(this.device, false);
-            this.device.removeEventListener("gattserverdisconnected", this.gattServerDisconnected!);
+            this.device.removeEventListener("gattserverdisconnected", this.gattServerDisconnectedEventCallback);
         }
         this.device = device;
         if (this.device) {
             // bind
-            this.device.addEventListener("gattserverdisconnected", this.gattServerDisconnected!);
+            this.device.addEventListener("gattserverdisconnected", this.gattServerDisconnectedEventCallback);
             this.updateDeviceCallbacksAll(this.device, true);
         }
     }
@@ -92,7 +95,7 @@ export class Connection {
     public purge() {
         this.setServices();
         this.setDevice();
-        this.setGattServerDisconnectedCallback()
+        this.setGattServerDisconnectedEventCallback()
         this.deviceCallbacks = [];
         this.servicesCallbacks = [];
     }
