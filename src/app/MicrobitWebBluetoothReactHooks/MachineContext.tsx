@@ -1,8 +1,8 @@
 import { getServices, Services } from "microbit-web-bluetooth";
 
 export type GattServerDisconnectedCallback = () => void;
-type DeviceCallback = (device: BluetoothDevice, binding: boolean) => void;
-type ServicesCallback = (services: Services, binding: boolean) => void;
+export type DeviceCallback = (device: BluetoothDevice, binding: boolean) => void;
+export type ServicesCallback = (services: Services, binding: boolean) => void;
 
 export default class MicrobitConnection {
     private gattServerDisconnected?: GattServerDisconnectedCallback;

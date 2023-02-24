@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Services } from 'microbit-web-bluetooth';
-import { useMicrobitActor } from './StateMachineContext';
+import { useMicrobitActor } from '../MachineReact';
 
 type ButtonA = 'a';
 type ButtonB = 'b';

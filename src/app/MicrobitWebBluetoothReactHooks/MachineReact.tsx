@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { createActorContext } from '@xstate/react'; // yarn add --dev xstate @xstate/react
-import { createBluetoothMachine } from './StateMachine';
-import MicrobitConnection from './MicrobitConnection';
+import { createBluetoothMachine } from './Machine';
+import MicrobitConnection from './MachineContext';
 
 const connection = new MicrobitConnection();
 const MicrobitContext = createActorContext(createBluetoothMachine(window.navigator.bluetooth, connection));

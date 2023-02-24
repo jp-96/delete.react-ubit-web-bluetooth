@@ -1,6 +1,6 @@
 import { assign, createMachine, DoneInvokeEvent } from "xstate"; // yarn add --dev xstate @xstate/react
 import { getServices, requestMicrobit, Services } from "microbit-web-bluetooth"; // yarn add --dev microbit-web-bluetooth
-import MicrobitConnection from "./MicrobitConnection";
+import MicrobitConnection from "./MachineContext";
 
 export type Context = {
   bluetooth: Bluetooth;
