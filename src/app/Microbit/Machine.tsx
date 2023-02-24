@@ -1,19 +1,12 @@
 import { assign, createMachine, DoneInvokeEvent } from "xstate"; // yarn add --dev xstate @xstate/react
 import { getServices, requestMicrobit, Services } from "microbit-web-bluetooth"; // yarn add --dev microbit-web-bluetooth
-import MicrobitConnection from "./MachineContext";
+import { Connection, Context } from "./MachineContext";
 
-export type Context = {
-  bluetooth: Bluetooth;
-  microbit: MicrobitConnection;
-  rejectedReason?: string;
-  disconnectedReason?: string;
-};
-
-export const createBluetoothMachine = (bluetooth: Bluetooth, microbit: MicrobitConnection) => createMachine<Context>(
+export const createBluetoothMachine = (bluetooth: Bluetooth, conn: Connection) => createMachine<Context>(
   // config
   {
     id: "mibrobit-bluetooth",
-    context: { bluetooth, microbit, }, // initial context
+    context: { bluetooth, conn, }, // initial context
     initial: "init", 
     states: {
       init: {
@@ -45,7 +38,7 @@ export const createBluetoothMachine = (bluetooth: Bluetooth, microbit: MicrobitC
       waiting: {
         invoke: {
           id: "get-services",
-          src: (context) => (context as Context).microbit.getServices(),
+          src: (context) => (context as Context).conn.getServices(),
           onDone: {
             target: "connected",
             actions: "assignMicrobitServices"
@@ -123,11 +116,11 @@ export const createBluetoothMachine = (bluetooth: Bluetooth, microbit: MicrobitC
       assignMicrobitDevice: (context, event) => {
         // [new device] bind
         const device = (event as DoneInvokeEvent<BluetoothDevice>).data;
-        context.microbit.setDevice(device);
+        context.conn.setDevice(device);
       },
       deassignMicrobitDevice: (context) => {
         // [old device] unbind
-        context.microbit.setDevice(undefined);
+        context.conn.setDevice(undefined);
       },
       assignRejectedReason: assign({
         rejectedReason: (_, event) => (event as DoneInvokeEvent<Error>).data.message
@@ -138,14 +131,14 @@ export const createBluetoothMachine = (bluetooth: Bluetooth, microbit: MicrobitC
       assignMicrobitServices: (context, event) => {
         // [new services] bind
         const services = (event as DoneInvokeEvent<Services>).data;
-        context.microbit.setServices(services);
+        context.conn.setServices(services);
       },
       deassignMicrobitServices: (context) => {
         // [old services] unbind
-        context.microbit.setServices(undefined);
+        context.conn.setServices(undefined);
       },
       gattDissconnect: (context: Context) => {
-        context.microbit.disconnectDeviceGatt();
+        context.conn.disconnectDeviceGatt();
       },
       assignDisconnectedReason : assign({
         disconnectedReason: (_, event) => (event as DoneInvokeEvent<Error>).data.message

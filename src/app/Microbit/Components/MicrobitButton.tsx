@@ -28,9 +28,9 @@ export default function MicroBitButton( props: Props ) {
     }, []);
     
     useEffect(() => {
-        state.context.microbit.addServicesCallback(cb);
+        state.context.conn.addServicesCallback(cb);
         return () => {
-            state.context.microbit.removeServicesCallback(cb);
+            state.context.conn.removeServicesCallback(cb);
         };
     }, []);
 

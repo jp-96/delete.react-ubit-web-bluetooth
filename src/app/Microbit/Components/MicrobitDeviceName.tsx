@@ -13,9 +13,9 @@ export default function MicroBitDeviceName() {
         }
     }, []);
     useEffect(() => {
-        state.context.microbit.addDeviceCallback(cb);
+        state.context.conn.addDeviceCallback(cb);
         return () => {
-            state.context.microbit.addDeviceCallback(cb);
+            state.context.conn.addDeviceCallback(cb);
         };
     }, []);
 

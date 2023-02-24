@@ -4,7 +4,14 @@ export type GattServerDisconnectedCallback = () => void;
 export type DeviceCallback = (device: BluetoothDevice, binding: boolean) => void;
 export type ServicesCallback = (services: Services, binding: boolean) => void;
 
-export default class MicrobitConnection {
+export type Context = {
+    bluetooth: Bluetooth;
+    conn: Connection;
+    rejectedReason?: string;
+    disconnectedReason?: string;
+};
+
+export class Connection {
     private gattServerDisconnected?: GattServerDisconnectedCallback;
     
     private deviceCallbacks: DeviceCallback[] = [];

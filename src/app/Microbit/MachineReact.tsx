@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { createActorContext } from '@xstate/react'; // yarn add --dev xstate @xstate/react
 import { createBluetoothMachine } from './Machine';
-import MicrobitConnection from './MachineContext';
+import { Connection } from './MachineContext';
 
-const connection = new MicrobitConnection();
-const MicrobitContext = createActorContext(createBluetoothMachine(window.navigator.bluetooth, connection));
+const conn = new Connection();
+const MicrobitContext = createActorContext(createBluetoothMachine(window.navigator.bluetooth, conn));
 
 export const useMicrobitActor = () => MicrobitContext.useActor();
 export const useMicrobitActorRef = () => MicrobitContext.useActorRef();
@@ -14,10 +14,10 @@ function MicrobitContextProviderInitialization({ children }) {
     const cb = useCallback(() => send("LOST"), []);
     useEffect(() => {
         console.log("MicrobitContextProviderInitialization: set")
-        state.context.microbit.setGattServerDisconnectedCallback(cb);
+        state.context.conn.setGattServerDisconnectedCallback(cb);
         return () => {
             console.log("MicrobitContextProviderInitialization: unset")
-            state.context.microbit.setGattServerDisconnectedCallback(undefined);
+            state.context.conn.setGattServerDisconnectedCallback(undefined);
         };
     }, [cb]);
     return (
