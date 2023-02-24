@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { DeviceCallback } from '../MachineContext';
-import { DeviceEffector, useMicrobitActor } from '../MachineReact';
+import { DeviceEffector, useMicrobitActor } from './Microbit';
 
 export default function MicroBitDeviceName() {
     const [state] = useMicrobitActor();

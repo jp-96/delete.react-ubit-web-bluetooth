@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Logo from './Logo';  // logo.svg ==> Log0.tsx
 //import './App.css'; // ==> ../index.html
 import { Services } from 'microbit-web-bluetooth';
-import { useMicrobitActor } from './Microbit/MachineReact';
+import { useMicrobitActor } from './Microbit/Components/Microbit';
 import MicroBitDeviceName from './Microbit/Components/MicrobitDeviceName';
 import MicroBitButton from './Microbit/Components/MicrobitButton';
 

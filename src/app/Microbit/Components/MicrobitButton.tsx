@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ServicesEffector, useMicrobitActor } from '../MachineReact';
+import { ServicesEffector, useMicrobitActor } from './Microbit';
 import { ServicesCallback } from '../MachineContext';
 
 type ButtonA = 'a';
