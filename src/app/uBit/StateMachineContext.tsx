@@ -1,35 +1,25 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { createActorContext } from '@xstate/react'; // yarn add --dev xstate @xstate/react
-import { createBluetoothMachine, BindServicesCallback } from './StateMachine';
+import { createBluetoothMachine } from './StateMachine';
+import MicrobitConnection from './MicrobitConnection';
 
-const MicrobitContext = createActorContext(createBluetoothMachine(window.navigator.bluetooth, 'MicrobitContext'));
+const connection = new MicrobitConnection();
+const MicrobitContext = createActorContext(createBluetoothMachine(window.navigator.bluetooth, connection));
 
 export const useMicrobitActor = () => MicrobitContext.useActor();
 export const useMicrobitActorRef = () => MicrobitContext.useActorRef();
 
-export function useBindServicesCallback(cb: BindServicesCallback) {
-    const [state] = useMicrobitActor();
-    useEffect(() => {
-        console.log("useBindServicesCallback: set")
-        state.context.cb.bindServices = cb;
-        return () => {
-            console.log("useBindServicesCallback: unset")
-            state.context.cb.bindServices = undefined;
-        };
-    }, []);
-}
-
 function MicrobitContextProviderInitialization({ children }) {
-    const service = useMicrobitActorRef();
+    const [state, send] = useMicrobitActor();
+    const cb = useCallback(() => send("LOST"), []);
     useEffect(() => {
-        const context = service.getSnapshot()?.context;
-        console.log("MicrobitContextProviderInitialization: set");
-        context && (context.cb.sendDisconnect = () => service.send("LOST"));
+        console.log("MicrobitContextProviderInitialization: set")
+        state.context.microbit.setGattServerDisconnectedCallback(cb);
         return () => {
             console.log("MicrobitContextProviderInitialization: unset")
-            context && (context.cb.sendDisconnect = undefined);
+            state.context.microbit.setGattServerDisconnectedCallback(undefined);
         };
-    }, []);
+    }, [cb]);
     return (
         <React.Fragment>
             {children}
