@@ -16,7 +16,7 @@ export const createMicrobitMachine = (conn: Connection) => createMachine<Context
       request: {
         invoke: {
           id: "request-device",
-          src: (context) => context.conn.requestDevice(),
+          src: "invokeRequestDevice",
           onDone: {
             target: "waiting",
           },
@@ -36,7 +36,7 @@ export const createMicrobitMachine = (conn: Connection) => createMachine<Context
       waiting: {
         invoke: {
           id: "get-services",
-          src: context => context.conn.getServices(),
+          src: "invokeGetServices",
           onDone: {
             target: "connected"
           },
@@ -88,7 +88,7 @@ export const createMicrobitMachine = (conn: Connection) => createMachine<Context
       subrequest: {
         invoke: {
           id: "sub-request-device",
-          src: (context) => context.conn.requestDevice(),
+          src: "invokeRequestDevice",
           onDone: {
             target: "waiting"
           },
@@ -100,7 +100,7 @@ export const createMicrobitMachine = (conn: Connection) => createMachine<Context
       }
     }
   },
-  // options: { actions }
+  // options: { actions, services }
   {
     actions: {
       deassignRejectedReason: assign({
@@ -127,7 +127,10 @@ export const createMicrobitMachine = (conn: Connection) => createMachine<Context
       callResetDevice: context => context.conn.resetDevice(),
       callResetServices: context => context.conn.resetServices(),
       callDisconnectGattServer: context => context.conn.disconnectGattServer()
-
+    },
+    services: {
+      invokeRequestDevice: (context) => context.conn.requestDevice(),
+      invokeGetServices: context => context.conn.getServices(),
     }
   }
 );
