@@ -44,11 +44,20 @@ export class Connection {
     }
 
     public async getServices() {
-        return await getServices(this.device!);
+        const services = await getServices(this.device!);
+        this.setServices(services);
     }
 
-    public disconnectDeviceGatt() {
-        this.device?.gatt?.disconnect();
+    public resetServices() {
+        this.setServices(undefined);
+    }
+
+    public disconnectGattServer() {
+        if (this.device && this.device.gatt && this.device.gatt.connected) {
+            this.device.gatt.disconnect();
+        } else {
+            console.log("missing Gatt Server connection.")
+        }
     }
 
     public addDeviceCallback(cb: DeviceCallback) {
@@ -95,7 +104,7 @@ export class Connection {
         this.servicesCallbacks.map(f => f(services, binding));
     }
 
-    public setServices(services?: Services) {
+    private setServices(services?: Services) {
         if (this.services) {
             // unbind
             this.updateServicesCallbacksAll(this.services, false);
@@ -108,8 +117,8 @@ export class Connection {
     }
 
     public purge() {
-        this.setServices();
-        this.setDevice();
+        this.resetServices();
+        this.resetDevice();
         this.setGattServerDisconnectedEventCallback()
         this.deviceCallbacks = [];
         this.servicesCallbacks = [];

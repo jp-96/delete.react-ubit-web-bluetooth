@@ -16,14 +16,14 @@ export const createMicrobitMachine = (conn: Connection) => createMachine<Context
       },
       request: {
         invoke: {
-          id: "request-microbit",
+          id: "request-device",
           src: (context) => context.conn.requestDevice(),
           onDone: {
             target: "waiting",
           },
           onError: {
             target: "rejected",
-            actions: "assignRejectedReason"
+            actions: "assignRejectedReasonOnError"
           }
         }
       },
@@ -39,20 +39,17 @@ export const createMicrobitMachine = (conn: Connection) => createMachine<Context
           id: "get-services",
           src: context => context.conn.getServices(),
           onDone: {
-            target: "connected",
-            actions: "assignMicrobitServices"
+            target: "connected"
           },
           onError: {
             target: "disconnected",
-            actions: "assignDisconnectedReason"
+            actions: "assignDisconnectedReasonOnError"
           }
         },
         on: {
           LOST: {
             target: "disconnected",
-            actions: assign({
-              disconnectedReason: "Delayed disconnection."
-            }),
+            actions: "assignDisconnectedReasonByDelayed"
           }
         }
       },
@@ -61,21 +58,17 @@ export const createMicrobitMachine = (conn: Connection) => createMachine<Context
           DISCONNECT: "disconnecting",
           LOST: {
             target: "disconnected",
-            actions: assign({
-              disconnectedReason: "GATT Server disconnect (by Peripheral)."
-            }),
+            actions: "assignDisconnectedReasonByPeripheral"
           }
         },
-        exit: "deassignMicrobitServices"
+        exit: "callResetServices"
       },
       disconnecting: {
-        entry: context => context.conn.disconnectDeviceGatt(),
+        entry: "callDisconnectGattServer",
         on: {
           LOST: {
             target: "disconnected",
-            actions: assign({
-              disconnectedReason: "GATT Client disconnect (by Central)."
-            }),
+            actions: "assignDisconnectedReasonByCentral"
           }
         }
       },
@@ -85,7 +78,7 @@ export const createMicrobitMachine = (conn: Connection) => createMachine<Context
           REQUEST: "subrequest",
           RESET: {
             target: "init",
-            actions: context => context.conn.resetDevice()
+            actions: "callResetDevice"
           }
         },
         exit: [
@@ -95,14 +88,14 @@ export const createMicrobitMachine = (conn: Connection) => createMachine<Context
       },
       subrequest: {
         invoke: {
-          id: "request-microbit",
+          id: "sub-request-device",
           src: (context) => context.conn.requestDevice(),
           onDone: {
             target: "waiting"
           },
           onError: {
             target: "disconnected",
-            actions: "assignRejectedReason"
+            actions: "assignRejectedReasonOnError"
           }
         }
       }
@@ -111,27 +104,31 @@ export const createMicrobitMachine = (conn: Connection) => createMachine<Context
   // options: { actions }
   {
     actions: {
-      assignRejectedReason: assign({
-        rejectedReason: (_, event) => (event as DoneInvokeEvent<Error>).data.message
-      }),
       deassignRejectedReason: assign({
         rejectedReason: undefined
       }),
-      assignDisconnectedReason : assign({
-        disconnectedReason: (_, event) => (event as DoneInvokeEvent<Error>).data.message
+      assignRejectedReasonOnError: assign({
+        rejectedReason: (_, event) => (event as DoneInvokeEvent<Error>).data.message
       }),
       deassignDisconnectedReason: assign({
         disconnectedReason: undefined
       }),
-      assignMicrobitServices: (context, event) => {
-        // [new services] bind
-        const services = (event as DoneInvokeEvent<Services>).data;
-        context.conn.setServices(services);
-      },
-      deassignMicrobitServices: (context) => {
-        // [old services] unbind
-        context.conn.setServices(undefined);
-      }
+      assignDisconnectedReasonOnError : assign({
+        disconnectedReason: (_, event) => (event as DoneInvokeEvent<Error>).data.message
+      }),
+      assignDisconnectedReasonByDelayed: assign({
+        disconnectedReason: "Delayed disconnection."
+      }),
+      assignDisconnectedReasonByPeripheral: assign({
+        disconnectedReason: "Disconnected by Peripheral."
+      }),
+      assignDisconnectedReasonByCentral: assign({
+        disconnectedReason: "Disconnected by Central."
+      }),
+      callResetDevice: context => context.conn.resetDevice(),
+      callResetServices: context => context.conn.resetServices(),
+      callDisconnectGattServer: context => context.conn.disconnectGattServer()
+
     }
   }
 );
