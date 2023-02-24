@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Logo from './Logo';  // logo.svg ==> Log0.tsx
 //import './App.css'; // ==> ../index.html
-import { useBindServicesCallback, useMicrobitActor } from './uBit/StateMachineContext';
+import { useMicrobitActor } from './uBit/StateMachineContext';
+import MicroBitDeviceName from './uBit/MicrobitDeviceName';
+import MicroBitButton from './uBit/MicrobitButton';
+import { Services } from 'microbit-web-bluetooth';
 
 function App() {
-  
+  const [state, send] = useMicrobitActor();
+  const [services, setServices] = useState<Services>({});
   const [buttonA, setButtonA] = useState(0);
   const [buttonB, setButtonB] = useState(0);
 
@@ -17,21 +21,28 @@ function App() {
     console.log("Button B:", `${event.type}`, `${event.detail}`);
     setButtonB(event.detail);
   };
-  useBindServicesCallback((services, binding) => {
+  
+  const cb = useCallback((services, binding) => {
     if (binding) {
       services.buttonService?.addEventListener("buttonastatechanged", listenerButtonA);
       services.buttonService?.addEventListener("buttonbstatechanged", listenerButtonB);
+      setServices(services);
     } else {
+      setServices({});
       //services.buttonService?.removeAllListeners("buttonastatechanged");
       //services.buttonService?.removeAllListeners("buttonbstatechanged");
     }
-  });
+  }, []);
 
-  const [state, send] = useMicrobitActor();
+  useEffect(() => {
+    state.context.microbit.addServicesCallback(cb);
+    return () => {
+        state.context.microbit.removeServicesCallback(cb);
+    };
+  }, []);
 
   const listItems =  (() => {
     const serviceNames: string[] = [];
-    const services = state.context.microbitServices;
     if (services) {
       Object.keys(services).forEach((key) => {
         if (services[key]) {
@@ -64,9 +75,11 @@ function App() {
           <button onClick={() => send("CONNECT")}>Connect</button>
           <button onClick={() => send("DISCONNECT")}>Disconnect</button>
           <br/>
-          {state.context.microbitDevice?.name && ("[" + state.context.microbitDevice.name + "]")}
+          <MicroBitDeviceName/>
           <br/>
           Button A: {`${buttonA}`} / Button B: {`${buttonB}`}
+          <br/>
+          Button a: <MicroBitButton button='a' /> / Button b: <MicroBitButton button='b' />
         </p>
         {listItems.length > 0 && <div>services:<ul>{listItems}</ul></div>}
         <p>
