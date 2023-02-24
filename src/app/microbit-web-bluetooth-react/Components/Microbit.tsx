@@ -12,6 +12,7 @@ export const useMicrobitActorRef = () => MicrobitActorContext.useActorRef();
 function MicrobitContextProviderInitialization({ children }) {
     const [state, send] = useMicrobitActor();
     useEffect(() => {
+        // TODO: Using XState Callback, parent <--ParentSend-- child(waiting gatt.disconnected).
         const conn = state.context.conn;
         conn.setGattServerDisconnectedEventCallback(() => send("LOST"));
         return () => {

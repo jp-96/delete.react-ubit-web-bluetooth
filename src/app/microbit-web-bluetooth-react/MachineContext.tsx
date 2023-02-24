@@ -4,6 +4,7 @@ export type GattServerDisconnectedEventCallback = () => void;
 export type DeviceCallback = (device: BluetoothDevice, binding: boolean) => void;
 export type ServicesCallback = (services: Services, binding: boolean) => void;
 
+// TODO: Reason: {type, message: string;}
 export type Context = {
     conn: Connection;
     rejectedReason?: string;
