@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Services } from 'microbit-web-bluetooth';
-import { useMicrobitActor } from '../MachineReact';
+import { ServicesEffector, useMicrobitActor } from '../MachineReact';
+import { ServicesCallback } from '../MachineContext';
 
 type ButtonA = 'a';
 type ButtonB = 'b';
@@ -14,8 +14,8 @@ export default function MicroBitButton( props: Props ) {
     const [state] = useMicrobitActor();
     const [button, setButton] = useState(0);
     
-    const cb = useCallback((services: Services, binding: boolean) => {        
-        const listenerButton = (event: any) => {
+    const cb = useCallback<ServicesCallback>((services, binding) => {        
+        const listenerButton = (event: CustomEvent<any>) => {
             console.log("Button:", `${event.type}`, `${event.detail}`);
             setButton(event.detail);
         };
@@ -26,13 +26,7 @@ export default function MicroBitButton( props: Props ) {
             services.buttonService?.removeEventListener(eventType, listenerButton);
         }
     }, []);
-    
-    useEffect(() => {
-        state.context.conn.addServicesCallback(cb);
-        return () => {
-            state.context.conn.removeServicesCallback(cb);
-        };
-    }, []);
+    useEffect(ServicesEffector(state, cb), []);
 
     return (
         <React.Fragment>

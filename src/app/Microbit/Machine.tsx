@@ -1,5 +1,4 @@
-import { assign, createMachine, DoneInvokeEvent } from "xstate"; // yarn add --dev xstate @xstate/react
-import { Services } from "microbit-web-bluetooth"; // yarn add --dev microbit-web-bluetooth
+import { assign, createMachine, DoneInvokeEvent } from "xstate"; // yarn add --dev xstate
 import { Connection, Context } from "./MachineContext";
 
 export const createMicrobitMachine = (conn: Connection) => createMachine<Context>(
