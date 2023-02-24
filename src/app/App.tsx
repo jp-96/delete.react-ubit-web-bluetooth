@@ -3,7 +3,7 @@ import Logo from './Logo';  // logo.svg ==> Log0.tsx
 //import './App.css'; // ==> ../index.html
 import { Services } from 'microbit-web-bluetooth';
 import { useMicrobitActor } from './Microbit/Components/Microbit';
-import MicroBitDeviceName from './Microbit/Components/MicrobitDeviceName';
+import MicroBitDevice from './Microbit/Components/MicrobitDevice';
 import MicroBitButton from './Microbit/Components/MicrobitButton';
 
 function App() {
@@ -75,11 +75,11 @@ function App() {
           <button onClick={() => send("CONNECT")}>Connect</button>
           <button onClick={() => send("DISCONNECT")}>Disconnect</button>
           <br/>
-          <MicroBitDeviceName/>
+          name: <MicroBitDevice display="name" />
           <br/>
-          Button A: {`${buttonA}`} / Button B: {`${buttonB}`}
+          id: <MicroBitDevice display="id" />
           <br/>
-          Button a: <MicroBitButton button='a' /> / Button b: <MicroBitButton button='b' />
+          Button a: <MicroBitButton watching='a' /> / Button b: <MicroBitButton watching='b' />
         </p>
         {listItems.length > 0 && <div>services:<ul>{listItems}</ul></div>}
         <p>

@@ -2,22 +2,30 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { DeviceCallback } from '../MachineContext';
 import { DeviceEffector, useMicrobitActor } from './Microbit';
 
-export default function MicroBitDeviceName() {
+type PropertyID = 'id';
+type PropertyName = 'name';
+type PropertyType = PropertyID | PropertyName;
+
+type Props = {
+    display: PropertyType;
+}
+
+export default function MicroBitDevice(props: Props) {
     const [state] = useMicrobitActor();
-    const [device, setDevice] = useState<BluetoothDevice | undefined>(undefined);
+    const [value, setValue] = useState<string | undefined>(undefined);
     
     const cb = useCallback<DeviceCallback>((device, binding) => {   
         if (binding) {
-            setDevice(device);
+            setValue(device[props.display]);
         } else {
-            setDevice(undefined);
+            setValue(undefined);
         }
     }, []);
     useEffect(DeviceEffector(state, cb),[]);
 
     return (
         <React.Fragment>
-            {device?.name} ({device?.id})
+            {value}
         </React.Fragment>
     );
 }

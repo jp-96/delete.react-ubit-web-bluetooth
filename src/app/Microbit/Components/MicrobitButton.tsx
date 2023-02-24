@@ -7,7 +7,7 @@ type ButtonB = 'b';
 type ButtonType = ButtonA | ButtonB;
 
 type Props = {
-    button: ButtonType;
+    watching: ButtonType;
 }
 
 export default function MicroBitButton( props: Props ) {
@@ -19,7 +19,7 @@ export default function MicroBitButton( props: Props ) {
             console.log("Button:", `${event.type}`, `${event.detail}`);
             setButton(event.detail);
         };
-        const eventType = props.button === 'a' ? 'buttonastatechanged' : 'buttonbstatechanged';
+        const eventType = props.watching === 'a' ? 'buttonastatechanged' : 'buttonbstatechanged';
         if (binding) {
             services.buttonService?.addEventListener(eventType, listenerButton);
         } else {
