@@ -12,15 +12,15 @@ type Props = {
 export default function MicroBitButton(props: Props) {
     const [button, setButton] = useState(0);
 
-    const listenButton: ButtonStateChangedCallback = (event) => {
+    const cb: ButtonStateChangedCallback = (event) => {
         setButton(event.detail);
     };
 
-    const buttonA = props.watching === 'a' ? listenButton : undefined;
-    const buttonB = props.watching === 'b' ? listenButton : undefined;
+    const cbA = props.watching === 'a' ? cb : undefined;
+    const cbB = props.watching === 'b' ? cb : undefined;
 
     return (
-        <MicrobitButtonService onButtonAStateChanged={buttonA} onButtonBStateChanged={buttonB} >
+        <MicrobitButtonService onButtonAStateChanged={cbA} onButtonBStateChanged={cbB} >
             {button}
         </MicrobitButtonService>
     );

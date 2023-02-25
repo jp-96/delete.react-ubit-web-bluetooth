@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, EffectCallback } from 'react';
 import { State } from 'xstate'; // yarn add --dev xstate
 import { createActorContext } from '@xstate/react'; // yarn add --dev @xstate/react
 import { createMicrobitMachine } from '../Machine';
-import { Connection, Context, DeviceCallback, ServicesCallback } from '../MachineContext';
+import { Connection, Context, DeviceBoundCallback, ServicesBoundCallback } from '../MachineContext';
 
 const MicrobitActorContext = createActorContext(createMicrobitMachine(new Connection(window.navigator.bluetooth)));
 
@@ -41,7 +41,7 @@ export function MicrobitContextProvider({ children }) {
 
 type StateWithContext = State<Context, any, any, any, any>;
 
-export function DeviceEffector(state: StateWithContext, cb: DeviceCallback): EffectCallback {
+export function DeviceEffector(state: StateWithContext, cb: DeviceBoundCallback): EffectCallback {
     return () => {
         /**
          * NOTE:
@@ -60,7 +60,7 @@ export function DeviceEffector(state: StateWithContext, cb: DeviceCallback): Eff
     }
 }
 
-export function ServicesEffector(state: StateWithContext, cb: ServicesCallback): EffectCallback {
+export function ServicesEffector(state: StateWithContext, cb: ServicesBoundCallback): EffectCallback {
     return () => {
         /**
          * NOTE:

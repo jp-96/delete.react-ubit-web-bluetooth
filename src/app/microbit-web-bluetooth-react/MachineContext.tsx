@@ -1,8 +1,8 @@
 import { getServices, requestMicrobit, Services } from "microbit-web-bluetooth";
 
 export type GattServerDisconnectedEventCallback = () => void;
-export type DeviceCallback = (device: BluetoothDevice, binding: boolean) => void;
-export type ServicesCallback = (services: Services, binding: boolean) => void;
+export type DeviceBoundCallback = (device: BluetoothDevice, binding: boolean) => void;
+export type ServicesBoundCallback = (services: Services, binding: boolean) => void;
 
 // TODO: Reason: {type, message: string;}
 export type Context = {
@@ -25,10 +25,10 @@ export class Connection {
 
     private gattServerDisconnectedEventCallback: GattServerDisconnectedEventCallback = defalutGattServerDisconnectedEventCallback;
 
-    private deviceCallbacks: DeviceCallback[] = [];
+    private deviceCallbacks: DeviceBoundCallback[] = [];
     private device?: BluetoothDevice;
 
-    private servicesCallbacks: ServicesCallback[] = [];
+    private servicesCallbacks: ServicesBoundCallback[] = [];
     private services?: Services;
 
     public setGattServerDisconnectedEventCallback(cb?: GattServerDisconnectedEventCallback) {
@@ -61,14 +61,14 @@ export class Connection {
         }
     }
 
-    public addDeviceCallback(cb: DeviceCallback) {
+    public addDeviceCallback(cb: DeviceBoundCallback) {
         this.deviceCallbacks.push(cb);
         if (this.device) {
             cb(this.device, true);
         }
     }
 
-    public removeDeviceCallback(cb: DeviceCallback) {
+    public removeDeviceCallback(cb: DeviceBoundCallback) {
         this.deviceCallbacks = this.deviceCallbacks.filter(f => f !== cb);
     }
 
@@ -91,14 +91,14 @@ export class Connection {
         }
     }
 
-    public addServicesCallback(cb: ServicesCallback) {
+    public addServicesCallback(cb: ServicesBoundCallback) {
         this.servicesCallbacks.push(cb);
         if (this.services) {
             cb(this.services, true);
         }
     }
 
-    public removeServicesCallback(cb: ServicesCallback) {
+    public removeServicesCallback(cb: ServicesBoundCallback) {
         this.servicesCallbacks = this.servicesCallbacks.filter(f => f !== cb);
     }
 

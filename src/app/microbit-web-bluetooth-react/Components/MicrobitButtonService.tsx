@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ServiceProps, ServicesEffector, useMicrobitActor } from './Microbit';
-import { ServicesCallback } from '../MachineContext';
+import { ServicesBoundCallback } from '../MachineContext';
 import { ButtonService, ButtonState } from 'microbit-web-bluetooth/types/services/button';
 
 export type ButtonStateChangedCallback = (event: CustomEvent<ButtonState>) => void;
@@ -13,7 +13,7 @@ interface Props extends ServiceProps<ButtonService> {
 export function MicrobitButtonService(props: Props) {
     const [state] = useMicrobitActor();
     
-    const cb = useCallback<ServicesCallback>((services, binding) => {
+    const cb = useCallback<ServicesBoundCallback>((services, binding) => {
         const buttonService = services.buttonService;
         if (buttonService){
             if (binding) {

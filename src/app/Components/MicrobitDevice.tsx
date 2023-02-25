@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { DeviceCallback } from '../microbit-web-bluetooth-react/MachineContext';
+import { DeviceBoundCallback } from '../microbit-web-bluetooth-react/MachineContext';
 import { DeviceEffector, useMicrobitActor } from '../microbit-web-bluetooth-react/Components/Microbit';
+import { MicrobitDevice } from '../microbit-web-bluetooth-react/Components/MicroBitDevice';
 
 type PropertyID = 'id';
 type PropertyName = 'name';
@@ -11,21 +12,18 @@ type Props = {
 }
 
 export default function MicroBitDevice(props: Props) {
-    const [state] = useMicrobitActor();
     const [value, setValue] = useState<string | undefined>(undefined);
 
-    const cb = useCallback<DeviceCallback>((device, binding) => {
+    const cb:DeviceBoundCallback = (device, binding) => {
         if (binding) {
             setValue(device[props.display]);
         } else {
             setValue(undefined);
         }
-    }, []);
-    useEffect(DeviceEffector(state, cb), []);
-
+    }
     return (
-        <React.Fragment>
+        <MicrobitDevice onDeviceBound={cb}>
             {value}
-        </React.Fragment>
+        </MicrobitDevice>
     );
 }
