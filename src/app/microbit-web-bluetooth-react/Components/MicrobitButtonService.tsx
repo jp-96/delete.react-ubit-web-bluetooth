@@ -1,7 +1,8 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { ServiceProps, ServicesEffector, useMicrobitActor } from './Microbit';
+import React from 'react';
+import { ServiceProps } from './Microbit';
 import { ServicesBoundCallback } from '../StateMachine/MachineContext';
 import { ButtonService, ButtonState } from 'microbit-web-bluetooth/types/services/button';
+import { MicrobitServices } from './MicroBitServices';
 
 export type ButtonStateChangedCallback = (event: CustomEvent<ButtonState>) => void;
 
@@ -11,9 +12,8 @@ interface Props extends ServiceProps<ButtonService> {
 }
 
 export function MicrobitButtonService(props: Props) {
-    const [state] = useMicrobitActor();
     
-    const cb = useCallback<ServicesBoundCallback>((services, binding) => {
+    const cb: ServicesBoundCallback = (services, binding) => {
         const buttonService = services.buttonService;
         if (buttonService){
             if (binding) {
@@ -40,12 +40,11 @@ export function MicrobitButtonService(props: Props) {
             }
         }
         
-    }, []);
-    useEffect(ServicesEffector(state, cb), []);
+    }
 
     return (
-        <React.Fragment>
+        <MicrobitServices onServicesBound={cb}>
             {props.children}
-        </React.Fragment>
+        </MicrobitServices>
     );
 }
