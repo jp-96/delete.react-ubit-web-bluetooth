@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { DeviceCallback } from '../MachineContext';
-import { DeviceEffector, useMicrobitActor } from './Microbit';
+import { DeviceCallback } from '../microbit-web-bluetooth-react/MachineContext';
+import { DeviceEffector, useMicrobitActor } from '../microbit-web-bluetooth-react/Components/Microbit';
 
 type PropertyID = 'id';
 type PropertyName = 'name';
@@ -10,7 +10,7 @@ type Props = {
     display: PropertyType;
 }
 
-export function MicroBitDevice(props: Props) {
+export default function MicroBitDevice(props: Props) {
     const [state] = useMicrobitActor();
     const [value, setValue] = useState<string | undefined>(undefined);
 

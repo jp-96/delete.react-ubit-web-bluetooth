@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ButtonStateChangedCallback, MicrobitButtonService } from './MicrobitButtonService';
+import { ButtonStateChangedCallback, MicrobitButtonService } from '../microbit-web-bluetooth-react/Components/MicrobitButtonService';
 
 type ButtonA = 'a';
 type ButtonB = 'b';
@@ -9,7 +9,7 @@ type Props = {
     watching: ButtonType;
 }
 
-export function MicroBitButton(props: Props) {
+export default function MicroBitButton(props: Props) {
     const [button, setButton] = useState(0);
 
     const listenButton: ButtonStateChangedCallback = (event) => {
