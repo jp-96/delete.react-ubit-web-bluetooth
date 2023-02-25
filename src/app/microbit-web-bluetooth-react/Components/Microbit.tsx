@@ -14,9 +14,9 @@ function MicrobitContextProviderInitialization({ children }) {
     useEffect(() => {
         // TODO: Using XState Callback, parent <--ParentSend-- child(waiting gatt.disconnected).
         const conn = state.context.conn;
-        conn.setGattServerDisconnectedEventCallback(() => send("LOST"));
+        conn.setGattServerDisconnectedCallback(() => send("LOST"));
         return () => {
-            conn.setGattServerDisconnectedEventCallback(undefined);
+            conn.setGattServerDisconnectedCallback(undefined);
         };
     }, []);
     return (
@@ -52,10 +52,10 @@ export function DeviceEffector(state: StateWithContext, cb: DeviceBoundCallback)
         
         //console.log("DeviceEffector init:", cb)
         const conn = state.context.conn;
-        conn.addDeviceCallback(cb);
+        conn.addDeviceBoundCallback(cb);
         return () => {
             //console.log("DeviceEffector deinit:", cb)
-            conn.removeDeviceCallback(cb);
+            conn.removeDeviceBoundCallback(cb);
         };
     }
 }
@@ -71,10 +71,10 @@ export function ServicesEffector(state: StateWithContext, cb: ServicesBoundCallb
 
         //console.log("ServicesEffector init:", cb)
         const conn = state.context.conn;
-        conn.addServicesCallback(cb);
+        conn.addServicesBoundCallback(cb);
         return () => {
             //console.log("ServicesEffector deinit:", cb)
-            conn.removeServicesCallback(cb);
+            conn.removeServicesBoundCallback(cb);
         };
     }
 }

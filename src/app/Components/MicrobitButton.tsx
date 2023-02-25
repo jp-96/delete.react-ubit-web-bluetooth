@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ButtonStateChangedCallback, MicrobitButtonService } from '../microbit-web-bluetooth-react/Components/MicrobitButtonService';
+import { ButtonStateChangedCallback, MicrobitButtonService } from '../microbit-web-bluetooth-react';
 
 type ButtonA = 'a';
 type ButtonB = 'b';
