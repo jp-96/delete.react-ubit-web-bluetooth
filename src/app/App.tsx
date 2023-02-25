@@ -1,47 +1,54 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Logo from './Logo';  // logo.svg ==> Log0.tsx
 //import './App.css'; // ==> ../index.html
-import { useMicrobitActor } from './uBit/StateMachineContext';
-import MicroBitDeviceName from './uBit/MicrobitDeviceName';
-import MicroBitButton from './uBit/MicrobitButton';
-import { Services } from 'microbit-web-bluetooth';
+import {
+  MicroBitButton,
+  MicroBitDevice,
+  Services,
+  ServicesEffector,
+  useMicrobitActor
+} from './microbit-web-bluetooth-react';
 
 function App() {
   const [state, send] = useMicrobitActor();
+  const [stateA, setStateA] = useState("");
+  const [stateB, setStateB] = useState("");
   const [services, setServices] = useState<Services>({});
-  const [buttonA, setButtonA] = useState(0);
-  const [buttonB, setButtonB] = useState(0);
 
-  const listenerButtonA = (event: any) => {
-    console.log("Button A:", `${event.type}`, `${event.detail}`);
-    setButtonA(event.detail);
-  };
-
-  const listenerButtonB = (event: any) => {
-    console.log("Button B:", `${event.type}`, `${event.detail}`);
-    setButtonB(event.detail);
-  };
-  
   const cb = useCallback((services, binding) => {
+
+    const listenerButtonA = (event: any) => {
+      console.log("Button A:", `${event.type}`, `${event.detail}`);
+      if (event.detail === 2) {
+        setStateA("(Long Press A)");
+      } else {
+        setStateA("")
+      }
+    };
+
+    const listenerButtonB = (event: any) => {
+      console.log("Button B:", `${event.type}`, `${event.detail}`);
+      if (event.detail === 2) {
+        setStateB("(Long Press B)");
+      } else {
+        setStateB("")
+      }
+    };
+
     if (binding) {
       services.buttonService?.addEventListener("buttonastatechanged", listenerButtonA);
       services.buttonService?.addEventListener("buttonbstatechanged", listenerButtonB);
       setServices(services);
     } else {
+      services.buttonService?.removeEventListener("buttonastatechanged", listenerButtonA);
+      services.buttonService?.removeEventListener("buttonbstatechanged", listenerButtonB);
       setServices({});
-      //services.buttonService?.removeAllListeners("buttonastatechanged");
-      //services.buttonService?.removeAllListeners("buttonbstatechanged");
     }
   }, []);
 
-  useEffect(() => {
-    state.context.microbit.addServicesCallback(cb);
-    return () => {
-        state.context.microbit.removeServicesCallback(cb);
-    };
-  }, []);
+  useEffect(ServicesEffector(state, cb), []);
 
-  const listItems =  (() => {
+  const listItems = (() => {
     const serviceNames: string[] = [];
     if (services) {
       Object.keys(services).forEach((key) => {
@@ -69,22 +76,24 @@ function App() {
           Learn React
         </a>
         <p>
-          {"[" + state.toStrings() + "]"}<br/>
+          {"[" + state.toStrings() + "]"}<br />
           <button onClick={() => send("RESET")}>RESET</button>
           <button onClick={() => send("REQUEST")}>REQUEST</button>
-          <button onClick={() => send("CONNECT")}>Connect</button>
-          <button onClick={() => send("DISCONNECT")}>Disconnect</button>
-          <br/>
-          <MicroBitDeviceName/>
-          <br/>
-          Button A: {`${buttonA}`} / Button B: {`${buttonB}`}
-          <br/>
-          Button a: <MicroBitButton button='a' /> / Button b: <MicroBitButton button='b' />
+          <button onClick={() => send("CONNECT")}>CONNECT</button>
+          <button onClick={() => send("DISCONNECT")}>DISCONNECT</button>
+          <br />
+          name: <MicroBitDevice display="name" />
+          <br />
+          id: <MicroBitDevice display="id" />
+          <br />
+          Button A: <MicroBitButton watching='a' /> {stateA}
+          <br />
+          Button B: <MicroBitButton watching='b' /> {stateB}
         </p>
         {listItems.length > 0 && <div>services:<ul>{listItems}</ul></div>}
         <p>
-          {state.context.rejectedReason && ("rejected: " + state.context.rejectedReason)}<br/>
-          {state.context.disconnectedReason && ( "disconnected: " + state.context.disconnectedReason)}
+          {state.context.rejectedReason && ("rejected: " + state.context.rejectedReason)}<br />
+          {state.context.disconnectedReason && ("disconnected: " + state.context.disconnectedReason)}
         </p>
       </header>
     </div>
