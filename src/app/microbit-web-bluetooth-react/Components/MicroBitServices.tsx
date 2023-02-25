@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { ServicesBoundCallback } from '../MachineContext';
+import { ServicesBoundCallback } from '../StateMachine/MachineContext';
 import { ServicesEffector, useMicrobitActor } from './Microbit';
 
 interface Props {

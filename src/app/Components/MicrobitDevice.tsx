@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { DeviceBoundCallback } from '../microbit-web-bluetooth-react/MachineContext';
+import { DeviceBoundCallback } from '../microbit-web-bluetooth-react/StateMachine/MachineContext';
 import { DeviceEffector, useMicrobitActor } from '../microbit-web-bluetooth-react/Components/Microbit';
 import { MicrobitDevice } from '../microbit-web-bluetooth-react/Components/MicroBitDevice';
 
