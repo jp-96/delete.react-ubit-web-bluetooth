@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { ServicesEffector, useMicrobitActor } from './Microbit';
-import { ServicesCallback } from '../MachineContext';
+import React, { useState } from 'react';
+import { ButtonStateChangedCallback, MicrobitButtonService } from './MicrobitButtonService';
 
 type ButtonA = 'a';
 type ButtonB = 'b';
@@ -11,25 +10,18 @@ type Props = {
 }
 
 export function MicroBitButton(props: Props) {
-    const [state] = useMicrobitActor();
     const [button, setButton] = useState(0);
 
-    const cb = useCallback<ServicesCallback>((services, binding) => {        
-        const listenerButton = (event: CustomEvent<any>) => {
-            setButton(event.detail);
-        };
-        const eventType = props.watching === 'a' ? 'buttonastatechanged' : 'buttonbstatechanged';
-        if (binding) {
-            services.buttonService?.addEventListener(eventType, listenerButton);
-        } else {
-            services.buttonService?.removeEventListener(eventType, listenerButton);
-        }
-    }, []);
-    useEffect(ServicesEffector(state, cb), []);
+    const listenButton: ButtonStateChangedCallback = (event) => {
+        setButton(event.detail);
+    };
+
+    const buttonA = props.watching === 'a' ? listenButton : undefined;
+    const buttonB = props.watching === 'b' ? listenButton : undefined;
 
     return (
-        <React.Fragment>
+        <MicrobitButtonService onButtonAStateChanged={buttonA} onButtonBStateChanged={buttonB} >
             {button}
-        </React.Fragment>
+        </MicrobitButtonService>
     );
 }

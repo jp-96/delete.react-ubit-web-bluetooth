@@ -78,3 +78,12 @@ export function ServicesEffector(state: StateWithContext, cb: ServicesCallback):
         };
     }
 }
+
+// interface/type
+
+type ServiceBoundCallback<T> = (service: T, binding: boolean) => void;
+
+export interface ServiceProps<T> {
+    children?: any;
+    onServiceBound?: ServiceBoundCallback<T>;
+}
