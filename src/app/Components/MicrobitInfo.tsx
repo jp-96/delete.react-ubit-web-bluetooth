@@ -9,7 +9,7 @@ type Props = {
     display: PropertyType;
 }
 
-export default function MicroBitDevice(props: Props) {
+export default function MicroBitInfo(props: Props) {
     const [value, setValue] = useState<string | undefined>(undefined);
 
     const cb:DeviceBoundCallback = (device, binding) => {

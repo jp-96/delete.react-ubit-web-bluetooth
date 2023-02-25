@@ -9,7 +9,7 @@ type Props = {
     watching: ButtonType;
 }
 
-export default function MicroBitButton(props: Props) {
+export default function MicrobitButton(props: Props) {
     const [button, setButton] = useState(0);
 
     const cb: ButtonStateChangedCallback = (event) => {

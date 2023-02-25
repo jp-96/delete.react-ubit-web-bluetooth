@@ -6,8 +6,8 @@ import {
   ServicesEffector,
   useMicrobitActor
 } from './microbit-web-bluetooth-react';
-import MicroBitDevice from './Components/MicrobitDevice';
-import MicroBitButton from './Components/MicrobitButton';
+import MicroBitInfo from './Components/MicrobitInfo';
+import MicrobitButton from './Components/MicrobitButton';
 
 function App() {
   const [state, send] = useMicrobitActor();
@@ -82,13 +82,13 @@ function App() {
           <button onClick={() => send("CONNECT")}>CONNECT</button>
           <button onClick={() => send("DISCONNECT")}>DISCONNECT</button>
           <br />
-          name: <MicroBitDevice display="name" />
+          name: <MicroBitInfo display="name" />
           <br />
-          id: <MicroBitDevice display="id" />
+          id: <MicroBitInfo display="id" />
           <br />
-          Button A: <MicroBitButton watching='a' /> {stateA}
+          Button A: <MicrobitButton watching='a' /> {stateA}
           <br />
-          Button B: <MicroBitButton watching='b' /> {stateB}
+          Button B: <MicrobitButton watching='b' /> {stateB}
         </p>
         {listItems.length > 0 && <div>services:<ul>{listItems}</ul></div>}
         <p>
