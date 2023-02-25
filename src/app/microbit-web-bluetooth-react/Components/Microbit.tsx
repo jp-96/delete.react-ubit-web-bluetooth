@@ -1,8 +1,8 @@
 import React, { useEffect, useCallback, EffectCallback } from 'react';
 import { State } from 'xstate'; // yarn add --dev xstate
 import { createActorContext } from '@xstate/react'; // yarn add --dev @xstate/react
-import { createMicrobitMachine } from '../Machine';
-import { Connection, Context, DeviceCallback, ServicesCallback } from '../MachineContext';
+import { createMicrobitMachine } from '../StateMachine/Machine';
+import { Connection, Context, DeviceBoundCallback, ServicesBoundCallback } from '../StateMachine/MachineContext';
 
 const MicrobitActorContext = createActorContext(createMicrobitMachine(new Connection(window.navigator.bluetooth)));
 
@@ -14,9 +14,9 @@ function MicrobitContextProviderInitialization({ children }) {
     useEffect(() => {
         // TODO: Using XState Callback, parent <--ParentSend-- child(waiting gatt.disconnected).
         const conn = state.context.conn;
-        conn.setGattServerDisconnectedEventCallback(() => send("LOST"));
+        conn.setGattServerDisconnectedCallback(() => send("LOST"));
         return () => {
-            conn.setGattServerDisconnectedEventCallback(undefined);
+            conn.setGattServerDisconnectedCallback(undefined);
         };
     }, []);
     return (
@@ -41,7 +41,7 @@ export function MicrobitContextProvider({ children }) {
 
 type StateWithContext = State<Context, any, any, any, any>;
 
-export function DeviceEffector(state: StateWithContext, cb: DeviceCallback): EffectCallback {
+export function DeviceEffector(state: StateWithContext, cb: DeviceBoundCallback): EffectCallback {
     return () => {
         /**
          * NOTE:
@@ -52,15 +52,15 @@ export function DeviceEffector(state: StateWithContext, cb: DeviceCallback): Eff
         
         //console.log("DeviceEffector init:", cb)
         const conn = state.context.conn;
-        conn.addDeviceCallback(cb);
+        conn.addDeviceBoundCallback(cb);
         return () => {
             //console.log("DeviceEffector deinit:", cb)
-            conn.removeDeviceCallback(cb);
+            conn.removeDeviceBoundCallback(cb);
         };
     }
 }
 
-export function ServicesEffector(state: StateWithContext, cb: ServicesCallback): EffectCallback {
+export function ServicesEffector(state: StateWithContext, cb: ServicesBoundCallback): EffectCallback {
     return () => {
         /**
          * NOTE:
@@ -71,10 +71,19 @@ export function ServicesEffector(state: StateWithContext, cb: ServicesCallback):
 
         //console.log("ServicesEffector init:", cb)
         const conn = state.context.conn;
-        conn.addServicesCallback(cb);
+        conn.addServicesBoundCallback(cb);
         return () => {
             //console.log("ServicesEffector deinit:", cb)
-            conn.removeServicesCallback(cb);
+            conn.removeServicesBoundCallback(cb);
         };
     }
+}
+
+// interface/type
+
+type ServiceBoundCallback<T> = (service: T, binding: boolean) => void;
+
+export interface ServiceProps<T> {
+    children?: any;
+    onServiceBound?: ServiceBoundCallback<T>;
 }

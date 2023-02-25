@@ -1,8 +1,10 @@
 import { MicrobitContextProvider } from './Components/Microbit';
-
-export { ServicesEffector, useMicrobitActor } from './Components/Microbit';
-export { MicroBitDevice } from './Components/MicrobitDevice';
-export { MicroBitButton } from './Components/MicrobitButton';
-export { Services } from 'microbit-web-bluetooth';
-
 export default MicrobitContextProvider;
+
+export { Services } from 'microbit-web-bluetooth';
+export { DeviceEffector, ServicesEffector, useMicrobitActor } from './Components/Microbit';
+export { MicrobitDevice } from './Components/MicroBitDevice';
+export { MicrobitServices } from './Components/MicroBitServices';
+export { ButtonStateChangedCallback, MicrobitButtonService } from './Components/MicrobitButtonService';
+export { DeviceBoundCallback, ServicesBoundCallback } from './StateMachine/MachineContext';
+
