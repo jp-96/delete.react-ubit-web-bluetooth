@@ -20,8 +20,9 @@ export default function MicrobitButton(props: Props) {
     const cbB = props.watching === 'b' ? cb : undefined;
 
     return (
-        <MicrobitButtonService onButtonAStateChanged={cbA} onButtonBStateChanged={cbB} >
+        <React.Fragment>
+            <MicrobitButtonService onButtonAStateChanged={cbA} onButtonBStateChanged={cbB} />
             {button}
-        </MicrobitButtonService>
+        </React.Fragment>
     );
 }
