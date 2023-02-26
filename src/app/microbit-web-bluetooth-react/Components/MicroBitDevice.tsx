@@ -3,7 +3,7 @@ import { DeviceBoundCallback } from '../StateMachine/MachineContext';
 import { DeviceEffector, useMicrobitActor } from './Microbit';
 
 interface Props {
-    children?: any;
+    //children?: any;
     onDeviceBound?: DeviceBoundCallback;
 }
 
@@ -18,8 +18,6 @@ export function MicrobitDevice(props: Props) {
     useEffect(DeviceEffector(state, cb), []);
 
     return (
-        <React.Fragment>
-            {props.children}
-        </React.Fragment>
+        <React.Fragment />
     );
 }

@@ -1,19 +1,24 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useReducer, useState } from 'react';
 import Logo from './Logo';  // logo.svg ==> Log0.tsx
 //import './App.css'; // ==> ../index.html
 import {
+  AccelerometerDataChangedCallback,
+  MicrobitAccelerometerService,
   Services,
   ServicesEffector,
   useMicrobitActor
 } from './microbit-web-bluetooth-react';
 import MicroBitInfo from './Components/MicrobitInfo';
 import MicrobitButton from './Components/MicrobitButton';
+import { AccelerometerPeriod } from 'microbit-web-bluetooth/types/services/accelerometer';
 
 function App() {
   const [state, send] = useMicrobitActor();
   const [stateA, setStateA] = useState("");
   const [stateB, setStateB] = useState("");
+  const [acc, setAcc]  = useState({ x:0, y:0, z:0, });
   const [services, setServices] = useState<Services>({});
+  const [frequency, setFrequency] = useState<AccelerometerPeriod>(20);
 
   const cb = useCallback((services, binding) => {
 
@@ -47,6 +52,10 @@ function App() {
   }, []);
 
   useEffect(ServicesEffector(state, cb), []);
+
+  const cbAcc: AccelerometerDataChangedCallback = (event) => {
+    setAcc({x: event.detail.x, y: event.detail.y, z: event.detail.z})
+  }
 
   const listItems = (() => {
     const serviceNames: string[] = [];
@@ -89,6 +98,14 @@ function App() {
           Button A: <MicrobitButton watching='a' /> {stateA}
           <br />
           Button B: <MicrobitButton watching='b' /> {stateB}
+          <br />
+          <MicrobitAccelerometerService onAccelerometerDataChanged={cbAcc} accelerometerPeriod={frequency} />
+          <br />
+          x: {acc.x}, y: {acc.y}, z: {acc.z}
+          <br />
+          <button onClick={() => setFrequency(640)}>SLOW</button>
+          {`${frequency}`}
+          <button onClick={() => setFrequency(20)}>FAST</button>
         </p>
         {listItems.length > 0 && <div>services:<ul>{listItems}</ul></div>}
         <p>
