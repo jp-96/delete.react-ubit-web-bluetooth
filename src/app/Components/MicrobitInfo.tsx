@@ -12,7 +12,7 @@ type Props = {
 export default function MicroBitInfo(props: Props) {
     const [value, setValue] = useState<string | undefined>(undefined);
 
-    const cb:DeviceBoundCallback = (device, binding) => {
+    const cb: DeviceBoundCallback = (device, binding) => {
         if (binding) {
             setValue(device[props.display]);
         } else {
@@ -20,8 +20,9 @@ export default function MicroBitInfo(props: Props) {
         }
     }
     return (
-        <MicrobitDevice onDeviceBound={cb}>
+        <React.Fragment>
+            <MicrobitDevice onDeviceBound={cb} />
             {value}
-        </MicrobitDevice>
+        </React.Fragment>
     );
 }
