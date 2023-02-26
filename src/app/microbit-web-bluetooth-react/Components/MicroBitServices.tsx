@@ -3,7 +3,7 @@ import { ServicesBoundCallback } from '../StateMachine/MachineContext';
 import { ServicesEffector, useMicrobitActor } from './Microbit';
 
 interface Props {
-    children?: any;
+    //children?: any;
     onServicesBound?: ServicesBoundCallback;
 }
 
@@ -18,8 +18,6 @@ export function MicrobitServices(props: Props) {
     useEffect(ServicesEffector(state, cb), []);
 
     return (
-        <React.Fragment>
-            {props.children}
-        </React.Fragment>
+        <React.Fragment />
     );
 }
