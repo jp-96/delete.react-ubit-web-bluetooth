@@ -1,11 +1,15 @@
 import { assign, createMachine, DoneInvokeEvent } from "xstate"; // yarn add --dev xstate
-import { Connection, Context } from "./MachineContext";
+import { Connection, Context, DisconnectedReason, RejectedReason } from "./MachineContext";
+
+const rejectedReason: RejectedReason = { type: "NONE", message: "" };
+const disconnectedReason: DisconnectedReason = { type: "NONE", message: "" };
 
 export const createMicrobitMachine = (conn: Connection) => createMachine<Context>(
   // config
   {
+    predictableActionArguments: true, // see: https://xstate.js.org/docs/guides/actions.html#actions
     id: "mibrobit-bluetooth",
-    context: { conn, }, // initial context
+    context: { conn, rejectedReason, disconnectedReason }, // initial context
     initial: "init",
     invoke: {
       id: "setup-cleanup-callback",
@@ -108,25 +112,25 @@ export const createMicrobitMachine = (conn: Connection) => createMachine<Context
   {
     actions: {
       deassignRejectedReason: assign({
-        rejectedReason: undefined
+        rejectedReason
       }),
       assignRejectedReasonOnError: assign({
-        rejectedReason: (_, event) => (event as DoneInvokeEvent<Error>).data.message
+        rejectedReason: (_, event) => { return { type: "ERROR", message: (event as DoneInvokeEvent<Error>).data.message }; }
       }),
       deassignDisconnectedReason: assign({
-        disconnectedReason: undefined
+        disconnectedReason
       }),
       assignDisconnectedReasonOnError: assign({
-        disconnectedReason: (_, event) => (event as DoneInvokeEvent<Error>).data.message
+        disconnectedReason: (_, event) => { return { type: "ERROR", message: (event as DoneInvokeEvent<Error>).data.message }; }
       }),
       assignDisconnectedReasonByDelayed: assign({
-        disconnectedReason: "Delayed disconnection."
+        disconnectedReason: { type: "DELAYED", message: "Delayed disconnection." }
       }),
       assignDisconnectedReasonByPeripheral: assign({
-        disconnectedReason: "Disconnected by Peripheral."
+        disconnectedReason: { type: "PERIPHERAL", message: "Disconnected by Peripheral." }
       }),
       assignDisconnectedReasonByCentral: assign({
-        disconnectedReason: "Disconnected by Central."
+        disconnectedReason: { type: "CENTRAL", message: "Disconnected by Central." }
       }),
       callResetDevice: context => context.conn.resetDevice(),
       callResetServices: context => context.conn.resetServices(),

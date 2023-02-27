@@ -10,9 +10,9 @@ interface Props {
 export function MicrobitDevice(props: Props) {
     const [state] = useMicrobitActor();
 
-    const cb = useCallback<DeviceBoundCallback>((device, binding) => {
+    const cb = useCallback<DeviceBoundCallback>((bound) => {
         if (props.onDeviceBound) {
-            props.onDeviceBound(device, binding);
+            props.onDeviceBound(bound);
         }
     }, []);
     useEffect(DeviceEffector(state, cb), []);

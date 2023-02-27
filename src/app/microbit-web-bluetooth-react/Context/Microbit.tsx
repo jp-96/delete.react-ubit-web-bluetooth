@@ -1,8 +1,8 @@
-import React, { useEffect, useCallback, EffectCallback } from 'react';
+import React, { EffectCallback } from 'react';
 import { State } from 'xstate'; // yarn add --dev xstate
 import { createActorContext } from '@xstate/react'; // yarn add --dev @xstate/react
 import { createMicrobitMachine } from '../StateMachine/Machine';
-import { Connection, Context, DeviceBoundCallback, ServicesBoundCallback } from '../StateMachine/MachineContext';
+import { Connection, Context, DeviceBoundCallback, ServiceBoundCallback, ServicesBoundCallback } from '../StateMachine/MachineContext';
 
 const MicrobitActorContext = createActorContext(createMicrobitMachine(new Connection(window.navigator.bluetooth)));
 
@@ -20,8 +20,22 @@ export function MicrobitContextProvider({ children }) {
 // helper
 
 type StateWithContext = State<Context, any, any, any, any>;
+type ConnectionContainer = StateWithContext | Context | Connection
 
-export function DeviceEffector(state: StateWithContext, cb: DeviceBoundCallback): EffectCallback {
+export function RefConnection(cc: ConnectionContainer): Connection {
+    if (cc as StateWithContext) {
+        return (cc as StateWithContext).context.conn;
+    }
+    if (cc as Context) {
+        return (cc as Context).conn;
+    }
+    if (cc as Connection) {
+        return (cc as Connection);
+    }
+    return undefined!;
+}
+
+export function DeviceEffector(cc: ConnectionContainer, cb: DeviceBoundCallback): EffectCallback {
     return () => {
         /**
          * NOTE:
@@ -31,7 +45,7 @@ export function DeviceEffector(state: StateWithContext, cb: DeviceBoundCallback)
          */
 
         //console.log("DeviceEffector init:", cb)
-        const conn = state.context.conn;
+        const conn = RefConnection(cc);
         conn.addDeviceBoundCallback(cb);
         return () => {
             //console.log("DeviceEffector deinit:", cb)
@@ -40,7 +54,7 @@ export function DeviceEffector(state: StateWithContext, cb: DeviceBoundCallback)
     }
 }
 
-export function ServicesEffector(state: StateWithContext, cb: ServicesBoundCallback): EffectCallback {
+export function ServicesEffector(cc: ConnectionContainer, cb: ServicesBoundCallback): EffectCallback {
     return () => {
         /**
          * NOTE:
@@ -50,7 +64,7 @@ export function ServicesEffector(state: StateWithContext, cb: ServicesBoundCallb
          */
 
         //console.log("ServicesEffector init:", cb)
-        const conn = state.context.conn;
+        const conn = RefConnection(cc);
         conn.addServicesBoundCallback(cb);
         return () => {
             //console.log("ServicesEffector deinit:", cb)
@@ -59,9 +73,7 @@ export function ServicesEffector(state: StateWithContext, cb: ServicesBoundCallb
     }
 }
 
-// interface/type
-
-type ServiceBoundCallback<T> = (service: T, binding: boolean) => void;
+// interface
 
 export interface ServiceProps<T> {
     //children?: any;
