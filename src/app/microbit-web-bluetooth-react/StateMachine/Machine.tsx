@@ -7,6 +7,10 @@ export const createMicrobitMachine = (conn: Connection) => createMachine<Context
     id: "mibrobit-bluetooth",
     context: { conn, }, // initial context
     initial: "init",
+    invoke: {
+      id: "setup-cleanup-callback",
+      src: "invokeSetGattServerDisconnectedCallback"
+    },
     states: {
       init: {
         on: {
@@ -129,8 +133,15 @@ export const createMicrobitMachine = (conn: Connection) => createMachine<Context
       callDisconnectGattServer: context => context.conn.disconnectGattServer()
     },
     services: {
-      invokeRequestDevice: (context) => context.conn.requestDevice(),
+      invokeRequestDevice: context => context.conn.requestDevice(),
       invokeGetServices: context => context.conn.getServices(),
+      invokeSetGattServerDisconnectedCallback: context => callback => {
+        context.conn.setGattServerDisconnectedCallback(() => callback("LOST"));
+        // Perform cleanup
+        return () => {
+          context.conn.setGattServerDisconnectedCallback(undefined);
+        };
+      }
     }
   }
 );
