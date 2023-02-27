@@ -10,9 +10,9 @@ interface Props {
 export function MicrobitServices(props: Props) {
     const [state] = useMicrobitActor();
 
-    const cb = useCallback<ServicesBoundCallback>((services, binding) => {
+    const cb = useCallback<ServicesBoundCallback>((bound) => {
         if (props.onServicesBound) {
-            props.onServicesBound(services, binding);
+            props.onServicesBound(bound);
         }
     }, []);
     useEffect(ServicesEffector(state, cb), []);

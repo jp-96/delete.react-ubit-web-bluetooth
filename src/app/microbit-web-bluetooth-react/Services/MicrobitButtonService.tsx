@@ -1,7 +1,7 @@
 import React from 'react';
-import { ServiceProps } from './Microbit';
+import { ServiceProps } from '../Context/Microbit';
 import { ServicesBoundCallback } from '../StateMachine/MachineContext';
-import { MicrobitServices } from './MicroBitServices';
+import { MicrobitServices } from '../Context/MicroBitServices';
 import { ButtonService, ButtonState } from 'microbit-web-bluetooth/types/services/button';
 
 export type ButtonStateChangedCallback = (event: CustomEvent<ButtonState>) => void;
@@ -15,11 +15,11 @@ const buttonastatechanged = 'buttonastatechanged';
 const buttonbstatechanged = 'buttonbstatechanged';
 
 export function MicrobitButtonService(props: Props) {
-    
-    const cb: ServicesBoundCallback = (services, binding) => {
-        const buttonService = services.buttonService;
-        if (buttonService){
-            if (binding) {
+
+    const cb: ServicesBoundCallback = (bound) => {
+        const buttonService = bound.target.buttonService;
+        if (buttonService) {
+            if (bound.binding) {
                 // button A
                 if (props.onButtonAStateChanged) {
                     buttonService.addEventListener(buttonastatechanged, props.onButtonAStateChanged)
@@ -39,10 +39,10 @@ export function MicrobitButtonService(props: Props) {
                 }
             }
             if (props.onServiceBound) {
-                props.onServiceBound(buttonService, binding);
+                props.onServiceBound({ target: buttonService, binding: bound.binding });
             }
         }
-        
+
     }
 
     return (

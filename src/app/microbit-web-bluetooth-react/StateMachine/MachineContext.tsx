@@ -1,14 +1,22 @@
 import { getServices, requestMicrobit, Services } from "microbit-web-bluetooth";
 
 export type GattServerDisconnectedCallback = () => void;
-export type DeviceBoundCallback = (device: BluetoothDevice, binding: boolean) => void;
-export type ServicesBoundCallback = (services: Services, binding: boolean) => void;
 
-// TODO: Reason: {type, message: string;}
+type Bound<T> = { target: T, binding: boolean };
+type BoundCallback<T> = (bound: Bound<T>) => void;
+export type DeviceBoundCallback = BoundCallback<BluetoothDevice>;
+export type ServicesBoundCallback = BoundCallback<Services>;
+export type ServiceBoundCallback<T> = BoundCallback<T>;
+
+type Reason<T> = { type: T, message: string; };
+
+export type RejectedReason = Reason<"NONE" | "ERROR">;
+export type DisconnectedReason = Reason<"NONE" | "ERROR" | "DELAYED" | "PERIPHERAL" | "CENTRAL">;
+
 export type Context = {
     conn: Connection;
-    rejectedReason?: string;
-    disconnectedReason?: string;
+    rejectedReason: RejectedReason;
+    disconnectedReason: DisconnectedReason;
 };
 
 const defalutGattServerDisconnectedCallback: GattServerDisconnectedCallback = () => {
@@ -64,7 +72,7 @@ export class Connection {
     public addDeviceBoundCallback(cb: DeviceBoundCallback) {
         this.deviceCallbacks.push(cb);
         if (this.device) {
-            cb(this.device, true);
+            cb({ target: this.device, binding: true });
         }
     }
 
@@ -72,29 +80,29 @@ export class Connection {
         this.deviceCallbacks = this.deviceCallbacks.filter(f => f !== cb);
     }
 
-    private updateDeviceBoundCallbacksAll(device: BluetoothDevice, binding: boolean) {
-        this.deviceCallbacks.map(f => f(device, binding));
+    private updateDeviceBoundCallbacksAll(bound: Bound<BluetoothDevice>) {
+        this.deviceCallbacks.map(f => f(bound));
     }
 
     private setDevice(device?: BluetoothDevice) {
         const gattserverdisconnected = "gattserverdisconnected";
         if (this.device) {
             // unbind
-            this.updateDeviceBoundCallbacksAll(this.device, false);
+            this.updateDeviceBoundCallbacksAll({ target: this.device, binding: false });
             this.device.removeEventListener(gattserverdisconnected, this.gattServerDisconnectedEventCallback);
         }
         this.device = device;
         if (this.device) {
             // bind
             this.device.addEventListener(gattserverdisconnected, this.gattServerDisconnectedEventCallback);
-            this.updateDeviceBoundCallbacksAll(this.device, true);
+            this.updateDeviceBoundCallbacksAll({ target: this.device, binding: true });
         }
     }
 
     public addServicesBoundCallback(cb: ServicesBoundCallback) {
         this.servicesCallbacks.push(cb);
         if (this.services) {
-            cb(this.services, true);
+            cb({ target: this.services, binding: true });
         }
     }
 
@@ -102,19 +110,19 @@ export class Connection {
         this.servicesCallbacks = this.servicesCallbacks.filter(f => f !== cb);
     }
 
-    private updateServicesBoundCallbacksAll(services: Services, binding: boolean) {
-        this.servicesCallbacks.map(f => f(services, binding));
+    private updateServicesBoundCallbacksAll(bound: Bound<Services>) {
+        this.servicesCallbacks.map(f => f(bound));
     }
 
     private setServices(services?: Services) {
         if (this.services) {
             // unbind
-            this.updateServicesBoundCallbacksAll(this.services, false);
+            this.updateServicesBoundCallbacksAll({ target: this.services, binding: false });
         }
         this.services = services;
         if (this.services) {
             // bind
-            this.updateServicesBoundCallbacksAll(this.services, true);
+            this.updateServicesBoundCallbacksAll({ target: this.services, binding: true });
         }
     }
 
