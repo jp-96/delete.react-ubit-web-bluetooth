@@ -9,35 +9,15 @@ const MicrobitActorContext = createActorContext(createMicrobitMachine(new Connec
 export const useMicrobitActor = () => MicrobitActorContext.useActor();
 export const useMicrobitActorRef = () => MicrobitActorContext.useActorRef();
 
-function MicrobitContextProviderInitialization({ children }) {
-    const [state, send] = useMicrobitActor();
-    useEffect(() => {
-        // TODO: Using XState Callback, parent <--ParentSend-- child(waiting gatt.disconnected).
-        const conn = state.context.conn;
-        conn.setGattServerDisconnectedCallback(() => send("LOST"));
-        return () => {
-            conn.setGattServerDisconnectedCallback(undefined);
-        };
-    }, []);
-    return (
-        <React.Fragment>
-            {children}
-        </React.Fragment>
-    )
-}
-
 export function MicrobitContextProvider({ children }) {
     return (
         <MicrobitActorContext.Provider>
-            <MicrobitContextProviderInitialization>
-                {children}
-            </MicrobitContextProviderInitialization>
+            {children}
         </MicrobitActorContext.Provider>
     );
 }
 
 // helper
-
 
 type StateWithContext = State<Context, any, any, any, any>;
 
@@ -49,7 +29,7 @@ export function DeviceEffector(state: StateWithContext, cb: DeviceBoundCallback)
          * effects (mount -> unmount -> mount) for newly mounted components. 
          * https://github.com/reactwg/react-18/discussions/19
          */
-        
+
         //console.log("DeviceEffector init:", cb)
         const conn = state.context.conn;
         conn.addDeviceBoundCallback(cb);
