@@ -4,23 +4,26 @@ import Logo from './Logo';  // logo.svg ==> Log0.tsx
 import {
   AccelerometerDataChangedCallback,
   MicrobitAccelerometerService,
-  Services,
+  ServiceBoundCallback,
+  ServicesBoundCallback,
   ServicesEffector,
   useMicrobitActor
 } from './microbit-web-bluetooth-react';
 import MicroBitInfo from './Components/MicrobitInfo';
 import MicrobitButton from './Components/MicrobitButton';
+import { Services } from 'microbit-web-bluetooth';
 import { AccelerometerPeriod } from 'microbit-web-bluetooth/types/services/accelerometer';
+import { ButtonService } from 'microbit-web-bluetooth/types/services/button';
 
 function App() {
   const [state, send] = useMicrobitActor();
   const [stateA, setStateA] = useState("");
   const [stateB, setStateB] = useState("");
-  const [acc, setAcc]  = useState({ x:0, y:0, z:0, });
+  const [acc, setAcc] = useState({ x: 0, y: 0, z: 0, });
   const [services, setServices] = useState<Services>({});
   const [frequency, setFrequency] = useState<AccelerometerPeriod>(20);
 
-  const cb = useCallback((services, binding) => {
+  const cb = useCallback<ServicesBoundCallback>((bound) => {
 
     const listenerButtonA = (event: any) => {
       console.log("Button A:", `${event.type}`, `${event.detail}`);
@@ -40,13 +43,13 @@ function App() {
       }
     };
 
-    if (binding) {
-      services.buttonService?.addEventListener("buttonastatechanged", listenerButtonA);
-      services.buttonService?.addEventListener("buttonbstatechanged", listenerButtonB);
-      setServices(services);
+    if (bound.binding) {
+      bound.target.buttonService?.addEventListener("buttonastatechanged", listenerButtonA);
+      bound.target.buttonService?.addEventListener("buttonbstatechanged", listenerButtonB);
+      setServices({ ...bound.target });
     } else {
-      services.buttonService?.removeEventListener("buttonastatechanged", listenerButtonA);
-      services.buttonService?.removeEventListener("buttonbstatechanged", listenerButtonB);
+      bound.target.buttonService?.removeEventListener("buttonastatechanged", listenerButtonA);
+      bound.target.buttonService?.removeEventListener("buttonbstatechanged", listenerButtonB);
       setServices({});
     }
   }, []);
@@ -54,7 +57,7 @@ function App() {
   useEffect(ServicesEffector(state, cb), []);
 
   const cbAcc: AccelerometerDataChangedCallback = (event) => {
-    setAcc({x: event.detail.x, y: event.detail.y, z: event.detail.z})
+    setAcc({ x: event.detail.x, y: event.detail.y, z: event.detail.z })
   }
 
   const listItems = (() => {
@@ -109,8 +112,8 @@ function App() {
         </p>
         {listItems.length > 0 && <div>services:<ul>{listItems}</ul></div>}
         <p>
-          {state.context.rejectedReason && ("rejected: " + state.context.rejectedReason)}<br />
-          {state.context.disconnectedReason && ("disconnected: " + state.context.disconnectedReason)}
+          {state.context.rejectedReason.type !== "NONE" && ("rejected: " + state.context.rejectedReason.message)}<br />
+          {state.context.disconnectedReason.type !== "NONE" && ("disconnected: " + state.context.disconnectedReason.message)}
         </p>
       </header>
     </div>

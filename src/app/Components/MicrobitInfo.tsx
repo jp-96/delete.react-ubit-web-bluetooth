@@ -12,9 +12,9 @@ type Props = {
 export default function MicroBitInfo(props: Props) {
     const [value, setValue] = useState<string | undefined>(undefined);
 
-    const cb: DeviceBoundCallback = (device, binding) => {
-        if (binding) {
-            setValue(device[props.display]);
+    const cb: DeviceBoundCallback = (bound) => {
+        if (bound.binding) {
+            setValue(bound.target[props.display]);
         } else {
             setValue(undefined);
         }
