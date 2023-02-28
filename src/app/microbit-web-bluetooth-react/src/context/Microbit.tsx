@@ -2,7 +2,7 @@ import React, { EffectCallback } from 'react';
 import { State } from 'xstate'; // yarn add --dev xstate
 import { createActorContext } from '@xstate/react'; // yarn add --dev @xstate/react
 import { createMicrobitMachine } from '../statemachine/Machine';
-import { Connection, Context, DeviceBoundCallback, ServiceBoundCallback, ServicesBoundCallback } from '../statemachine/MachineContext';
+import { Connection, Context, BoundCallback, ServiceBoundCallback, ServicesBoundCallback } from '../statemachine/MachineContext';
 
 const MicrobitActorContext = createActorContext(createMicrobitMachine(new Connection(window.navigator.bluetooth)));
 
@@ -35,7 +35,7 @@ export function RefConnection(cc: ConnectionContainer): Connection {
     return undefined!;
 }
 
-export function DeviceEffector(cc: ConnectionContainer, cb: DeviceBoundCallback): EffectCallback {
+export function DeviceEffector(cc: ConnectionContainer, cb: BoundCallback<BluetoothDevice>): EffectCallback {
     return () => {
         /**
          * NOTE:

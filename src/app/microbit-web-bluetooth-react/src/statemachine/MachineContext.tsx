@@ -3,8 +3,7 @@ import { getServices, requestMicrobit, Services } from "microbit-web-bluetooth";
 export type GattServerDisconnectedCallback = () => void;
 
 type Bound<T> = { target: T, binding: boolean };
-type BoundCallback<T> = (bound: Bound<T>) => void;
-export type DeviceBoundCallback = BoundCallback<BluetoothDevice>;
+export type BoundCallback<T> = (bound: Bound<T>) => void;
 export type ServicesBoundCallback = BoundCallback<Services>;
 export type ServiceBoundCallback<T> = BoundCallback<T>;
 
@@ -33,7 +32,7 @@ export class Connection {
 
     private gattServerDisconnectedEventCallback: GattServerDisconnectedCallback = defalutGattServerDisconnectedCallback;
 
-    private deviceCallbacks: DeviceBoundCallback[] = [];
+    private deviceCallbacks: BoundCallback<BluetoothDevice>[] = [];
     private device?: BluetoothDevice;
 
     private servicesCallbacks: ServicesBoundCallback[] = [];
@@ -69,14 +68,14 @@ export class Connection {
         }
     }
 
-    public addDeviceBoundCallback(cb: DeviceBoundCallback) {
+    public addDeviceBoundCallback(cb: BoundCallback<BluetoothDevice>) {
         this.deviceCallbacks.push(cb);
         if (this.device) {
             cb({ target: this.device, binding: true });
         }
     }
 
-    public removeDeviceBoundCallback(cb: DeviceBoundCallback) {
+    public removeDeviceBoundCallback(cb: BoundCallback<BluetoothDevice>) {
         this.deviceCallbacks = this.deviceCallbacks.filter(f => f !== cb);
     }
 
