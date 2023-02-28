@@ -1,9 +1,9 @@
-import { MicrobitContextProvider } from './src/context/Microbit';
+import { MicrobitContextProvider } from './src/context/MicrobitContext';
 export default MicrobitContextProvider;
 
-export { CustomEventCallback, DeviceEffector, ServicesEffector, useMicrobitActor } from './src/context/Microbit';
+export { CustomEventCallback, DeviceEffector, ServicesEffector, useMicrobitActor } from './src/context/MicrobitContext';
 export { MicrobitDevice } from './src/context/MicroBitDevice';
 export { MicrobitServices } from './src/context/MicroBitServices';
-export { MicrobitAccelerometerService } from './src/services/MicrobitAccelerometerService';
-export { MicrobitButtonService } from './src/services/MicrobitButtonService';
-export { BoundCallback } from './src/statemachine/MachineContext';
+export { MicrobitAccelerometer } from './src/services/MicrobitAccelerometer';
+export { MicrobitButton } from './src/services/MicrobitButton';
+export { BoundCallback } from './src/statemachine/Context';

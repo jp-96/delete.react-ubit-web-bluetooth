@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
-import { BoundCallback } from '../statemachine/MachineContext';
-import { DeviceEffector, useMicrobitActor } from './Microbit';
+import { BoundCallback } from '../statemachine/Context';
+import { DeviceEffector, useMicrobitActor } from './MicrobitContext';
 
 interface Props {
     //children?: any;

@@ -2,23 +2,12 @@ import { getServices, requestMicrobit, Services } from "microbit-web-bluetooth";
 
 export type GattServerDisconnectedCallback = () => void;
 
-type Bound<T> = { target: T, binding: boolean };
-export type BoundCallback<T> = (bound: Bound<T>) => void;
-
-type Reason<T> = { type: T, message: string; };
-
-export type RejectedReason = Reason<"NONE" | "ERROR">;
-export type DisconnectedReason = Reason<"NONE" | "ERROR" | "DELAYED" | "PERIPHERAL" | "CENTRAL">;
-
-export type Context = {
-    conn: Connection;
-    rejectedReason: RejectedReason;
-    disconnectedReason: DisconnectedReason;
-};
-
 const defalutGattServerDisconnectedCallback: GattServerDisconnectedCallback = () => {
     console.log("missing GattServerDisconnectedCallback.");
 };
+
+type Bound<T> = { target: T, binding: boolean };
+export type BoundCallback<T> = (bound: Bound<T>) => void;
 
 export class Connection {
 
@@ -132,3 +121,14 @@ export class Connection {
     }
 
 }
+
+type Reason<T> = { type: T, message: string; };
+
+export type RejectedReason = Reason<"NONE" | "ERROR">;
+export type DisconnectedReason = Reason<"NONE" | "ERROR" | "DELAYED" | "PERIPHERAL" | "CENTRAL">;
+
+export type Context = {
+    conn: Connection;
+    rejectedReason: RejectedReason;
+    disconnectedReason: DisconnectedReason;
+};
