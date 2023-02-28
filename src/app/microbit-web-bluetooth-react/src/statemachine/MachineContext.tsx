@@ -4,7 +4,6 @@ export type GattServerDisconnectedCallback = () => void;
 
 type Bound<T> = { target: T, binding: boolean };
 export type BoundCallback<T> = (bound: Bound<T>) => void;
-export type ServiceBoundCallback<T> = BoundCallback<T>;
 
 type Reason<T> = { type: T, message: string; };
 

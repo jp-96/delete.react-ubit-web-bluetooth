@@ -2,7 +2,7 @@ import React, { EffectCallback } from 'react';
 import { State } from 'xstate'; // yarn add --dev xstate
 import { createActorContext } from '@xstate/react'; // yarn add --dev @xstate/react
 import { createMicrobitMachine } from '../statemachine/Machine';
-import { Connection, Context, BoundCallback, ServiceBoundCallback } from '../statemachine/MachineContext';
+import { Connection, Context, BoundCallback } from '../statemachine/MachineContext';
 import { Services } from 'microbit-web-bluetooth';
 
 const MicrobitActorContext = createActorContext(createMicrobitMachine(new Connection(window.navigator.bluetooth)));
@@ -78,5 +78,5 @@ export function ServicesEffector(cc: ConnectionContainer, cb: BoundCallback<Serv
 
 export interface ServiceProps<T> {
     //children?: any;
-    onServiceBound?: ServiceBoundCallback<T>;
+    onServiceBound?: BoundCallback<T>;
 }
