@@ -13,35 +13,35 @@ interface Props extends ServiceProps<AccelerometerService> {
 const accelerometerdatachanged = 'accelerometerdatachanged';
 
 export function MicrobitAccelerometer(props: Props) {
-    const [accelerometerService, setAccelerometer] = useState<AccelerometerService | undefined>(undefined);
+    const [service, setService] = useState<AccelerometerService | undefined>(undefined);
 
-    const cb: BoundCallback<Services> = (bound) => {
-        const accelerometerService = bound.target.accelerometerService;
-        if (accelerometerService) {
+    const onServicesBound: BoundCallback<Services> = (bound) => {
+        const target = bound.target.accelerometerService;
+        if (target) {
             if (bound.binding) {
                 if (props.onAccelerometerDataChanged) {
-                    accelerometerService.addEventListener(accelerometerdatachanged, props.onAccelerometerDataChanged)
+                    target.addEventListener(accelerometerdatachanged, props.onAccelerometerDataChanged)
                 }
-                setAccelerometer(accelerometerService);
+                setService(target);
             } else {
                 if (props.onAccelerometerDataChanged) {
-                    accelerometerService.removeEventListener(accelerometerdatachanged, props.onAccelerometerDataChanged)
+                    target.removeEventListener(accelerometerdatachanged, props.onAccelerometerDataChanged)
                 }
-                setAccelerometer(undefined);
+                setService(undefined);
             }
             if (props.onServiceBound) {
-                props.onServiceBound({ target: accelerometerService, binding: bound.binding });
+                props.onServiceBound({ ...bound, target });
             }
         }
     }
 
     useEffect(() => {
-        if (accelerometerService && props.accelerometerPeriod) {
-            accelerometerService.setAccelerometerPeriod(props.accelerometerPeriod);
+        if (service && props.accelerometerPeriod) {
+            service.setAccelerometerPeriod(props.accelerometerPeriod);
         }
-    }, [accelerometerService, props.accelerometerPeriod]);
+    }, [service, props.accelerometerPeriod]);
 
     return (
-        <MicrobitServices onServicesBound={cb} />
+        <MicrobitServices onServicesBound={onServicesBound} />
     );
 }
