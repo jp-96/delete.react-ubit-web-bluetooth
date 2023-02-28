@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { ServiceProps } from '../context/Microbit';
+import { CustomEventCallback, ServiceProps } from '../context/Microbit';
 import { BoundCallback } from '../statemachine/MachineContext';
 import { MicrobitServices } from '../context/MicroBitServices';
 import { Services } from 'microbit-web-bluetooth';
 import { AccelerometerData, AccelerometerPeriod, AccelerometerService } from 'microbit-web-bluetooth/types/services/accelerometer';
 
-export type AccelerometerDataChangedCallback = (event: CustomEvent<AccelerometerData>) => void;
-
 interface Props extends ServiceProps<AccelerometerService> {
-    onAccelerometerDataChanged?: AccelerometerDataChangedCallback;
+    onAccelerometerDataChanged?: CustomEventCallback<AccelerometerData>;
     accelerometerPeriod?: AccelerometerPeriod;
 }
 

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useReducer, useState } from 'react';
 import Logo from './Logo';  // logo.svg ==> Log0.tsx
 //import './App.css'; // ==> ../index.html
 import {
-  AccelerometerDataChangedCallback,
+  CustomEventCallback,
   BoundCallback,
   MicrobitAccelerometerService,
   ServicesEffector,
@@ -11,7 +11,7 @@ import {
 import MicroBitInfo from './custom/components/MicrobitInfo';
 import MicrobitButton from './custom/components/MicrobitButton';
 import { Services } from 'microbit-web-bluetooth';
-import { AccelerometerPeriod } from 'microbit-web-bluetooth/types/services/accelerometer';
+import { AccelerometerData, AccelerometerPeriod } from 'microbit-web-bluetooth/types/services/accelerometer';
 
 function App() {
   const [state, send] = useMicrobitActor();
@@ -54,7 +54,7 @@ function App() {
 
   useEffect(ServicesEffector(state, cb), []);
 
-  const cbAcc: AccelerometerDataChangedCallback = (event) => {
+  const cbAcc: CustomEventCallback<AccelerometerData> = (event) => {
     setAcc({ x: event.detail.x, y: event.detail.y, z: event.detail.z })
   }
 

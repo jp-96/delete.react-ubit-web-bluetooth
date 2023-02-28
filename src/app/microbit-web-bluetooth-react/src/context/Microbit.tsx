@@ -74,7 +74,9 @@ export function ServicesEffector(cc: ConnectionContainer, cb: BoundCallback<Serv
     }
 }
 
-// interface
+// type, interface
+
+export type CustomEventCallback<T> = (event: CustomEvent<T>) => void;
 
 export interface ServiceProps<T> {
     //children?: any;
