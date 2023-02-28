@@ -3,10 +3,7 @@ import { getServices, requestMicrobit, Services } from "microbit-web-bluetooth";
 export type GattServerDisconnectedCallback = () => void;
 
 type Bound<T> = { target: T, binding: boolean };
-type BoundCallback<T> = (bound: Bound<T>) => void;
-export type DeviceBoundCallback = BoundCallback<BluetoothDevice>;
-export type ServicesBoundCallback = BoundCallback<Services>;
-export type ServiceBoundCallback<T> = BoundCallback<T>;
+export type BoundCallback<T> = (bound: Bound<T>) => void;
 
 type Reason<T> = { type: T, message: string; };
 
@@ -33,10 +30,10 @@ export class Connection {
 
     private gattServerDisconnectedEventCallback: GattServerDisconnectedCallback = defalutGattServerDisconnectedCallback;
 
-    private deviceCallbacks: DeviceBoundCallback[] = [];
+    private deviceCallbacks: BoundCallback<BluetoothDevice>[] = [];
     private device?: BluetoothDevice;
 
-    private servicesCallbacks: ServicesBoundCallback[] = [];
+    private servicesCallbacks: BoundCallback<Services>[] = [];
     private services?: Services;
 
     public setGattServerDisconnectedCallback(cb?: GattServerDisconnectedCallback) {
@@ -69,14 +66,14 @@ export class Connection {
         }
     }
 
-    public addDeviceBoundCallback(cb: DeviceBoundCallback) {
+    public addDeviceBoundCallback(cb: BoundCallback<BluetoothDevice>) {
         this.deviceCallbacks.push(cb);
         if (this.device) {
             cb({ target: this.device, binding: true });
         }
     }
 
-    public removeDeviceBoundCallback(cb: DeviceBoundCallback) {
+    public removeDeviceBoundCallback(cb: BoundCallback<BluetoothDevice>) {
         this.deviceCallbacks = this.deviceCallbacks.filter(f => f !== cb);
     }
 
@@ -99,14 +96,14 @@ export class Connection {
         }
     }
 
-    public addServicesBoundCallback(cb: ServicesBoundCallback) {
+    public addServicesBoundCallback(cb: BoundCallback<Services>) {
         this.servicesCallbacks.push(cb);
         if (this.services) {
             cb({ target: this.services, binding: true });
         }
     }
 
-    public removeServicesBoundCallback(cb: ServicesBoundCallback) {
+    public removeServicesBoundCallback(cb: BoundCallback<Services>) {
         this.servicesCallbacks = this.servicesCallbacks.filter(f => f !== cb);
     }
 
