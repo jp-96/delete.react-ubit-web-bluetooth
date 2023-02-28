@@ -2,30 +2,28 @@ import React, { useState } from 'react';
 import { MicrobitButton, BoundCallback, CustomEventCallback } from '../../microbit-web-bluetooth-react';
 import { ButtonService, ButtonState } from 'microbit-web-bluetooth/types/services/button';
 
-type ButtonType = 'a' | 'b';
-
 type Props = {
-    watching: ButtonType;
+    button: 'a' | 'b';
 }
 
 export default function MicrobitButtonState(props: Props) {
-    const [button, setButton] = useState(0);
+    const [state, setState] = useState<ButtonState | '-'>('-');
 
-    const cb: CustomEventCallback<ButtonState> = (event) => {
-        setButton(event.detail);
+    const handler: CustomEventCallback<ButtonState> = (event) => {
+        setState(event.detail);
     };
+    const onButtonAStateChanged = props.button === 'a' ? handler : undefined;
+    const onButtonBStateChanged = props.button === 'b' ? handler : undefined;
 
-    const cbBound: BoundCallback<ButtonService> = (bound) => {
-        // dummy
+    const onServiceBound: BoundCallback<ButtonService> = (bound) => {
+        // NOTE: ButtonState.Release = 0
+        setState(bound.binding ? 0 : '-');
     };
-
-    const cbA = props.watching === 'a' ? cb : undefined;
-    const cbB = props.watching === 'b' ? cb : undefined;
 
     return (
         <React.Fragment>
-            <MicrobitButton onButtonAStateChanged={cbA} onButtonBStateChanged={cbB} onServiceBound={cbBound} />
-            {button}
+            <MicrobitButton onButtonAStateChanged={onButtonAStateChanged} onButtonBStateChanged={onButtonBStateChanged} onServiceBound={onServiceBound} />
+            {state}
         </React.Fragment>
     );
 }

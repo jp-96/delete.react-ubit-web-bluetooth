@@ -92,13 +92,13 @@ function App() {
           <button onClick={() => send("CONNECT")}>CONNECT</button>
           <button onClick={() => send("DISCONNECT")}>DISCONNECT</button>
           <br />
-          name: <MicroBitInfo display="name" />
+          name: <MicroBitInfo infoName="name" />
           <br />
-          id: <MicroBitInfo display="id" />
+          id: <MicroBitInfo infoName="id" />
           <br />
-          Button A: <MicrobitButtonState watching='a' /> {stateA}
+          Button A: <MicrobitButtonState button='a' /> {stateA}
           <br />
-          Button B: <MicrobitButtonState watching='b' /> {stateB}
+          Button B: <MicrobitButtonState button='b' /> {stateB}
           <br />
           <MicrobitAccelerometer onAccelerometerDataChanged={cbAcc} accelerometerPeriod={frequency} />
           <br />
