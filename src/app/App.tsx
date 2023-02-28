@@ -9,8 +9,8 @@ import {
   ServicesEffector,
   useMicrobitActor
 } from './microbit-web-bluetooth-react';
-import MicroBitInfo from './Components/MicrobitInfo';
-import MicrobitButton from './Components/MicrobitButton';
+import MicroBitInfo from './custom/components/MicrobitInfo';
+import MicrobitButton from './custom/components/MicrobitButton';
 import { Services } from 'microbit-web-bluetooth';
 import { AccelerometerPeriod } from 'microbit-web-bluetooth/types/services/accelerometer';
 import { ButtonService } from 'microbit-web-bluetooth/types/services/button';
