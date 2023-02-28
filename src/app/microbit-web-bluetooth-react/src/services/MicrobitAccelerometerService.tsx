@@ -12,7 +12,7 @@ interface Props extends ServiceProps<AccelerometerService> {
 
 const accelerometerdatachanged = 'accelerometerdatachanged';
 
-export function MicrobitAccelerometerService(props: Props) {
+export function MicrobitAccelerometer(props: Props) {
     const [accelerometerService, setAccelerometer] = useState<AccelerometerService | undefined>(undefined);
 
     const cb: BoundCallback<Services> = (bound) => {

@@ -13,7 +13,7 @@ interface Props extends ServiceProps<ButtonService> {
 const buttonastatechanged = 'buttonastatechanged';
 const buttonbstatechanged = 'buttonbstatechanged';
 
-export function MicrobitButtonService(props: Props) {
+export function MicrobitButton(props: Props) {
 
     const cb: BoundCallback<Services> = (bound) => {
         const buttonService = bound.target.buttonService;

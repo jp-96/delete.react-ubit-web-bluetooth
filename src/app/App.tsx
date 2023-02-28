@@ -4,7 +4,7 @@ import Logo from './Logo';  // logo.svg ==> Log0.tsx
 import {
   CustomEventCallback,
   BoundCallback,
-  MicrobitAccelerometerService,
+  MicrobitAccelerometer,
   ServicesEffector,
   useMicrobitActor
 } from './microbit-web-bluetooth-react';
@@ -100,7 +100,7 @@ function App() {
           <br />
           Button B: <MicrobitButtonState watching='b' /> {stateB}
           <br />
-          <MicrobitAccelerometerService onAccelerometerDataChanged={cbAcc} accelerometerPeriod={frequency} />
+          <MicrobitAccelerometer onAccelerometerDataChanged={cbAcc} accelerometerPeriod={frequency} />
           <br />
           x: {acc.x}, y: {acc.y}, z: {acc.z}
           <br />
