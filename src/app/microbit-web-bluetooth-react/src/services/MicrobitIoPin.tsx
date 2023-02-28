@@ -10,14 +10,14 @@ interface Props extends ServiceProps<IoPinService> {
 
 export function MicrobitIoPin(props: Props) {
     
-    const onServicesBound: BoundCallback<Services> = (bound) => {
+    const onServicesBound: BoundCallback<Services> = bound => {
         const target = bound.target.ioPinService;
         if (target) {
             if (props.onServiceBound) {
                 props.onServiceBound({ ...bound, target});
             }
         }
-    }
+    };
 
     return (
         <MicrobitServices onServicesBound={onServicesBound} />

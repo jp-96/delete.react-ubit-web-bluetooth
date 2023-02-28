@@ -10,14 +10,14 @@ interface Props extends ServiceProps<LedService> {
 
 export function MicrobitLed(props: Props) {
     
-    const onServicesBound: BoundCallback<Services> = (bound) => {
+    const onServicesBound: BoundCallback<Services> = bound => {
         const target = bound.target.ledService;
         if (target) {
             if (props.onServiceBound) {
                 props.onServiceBound({ ...bound, target});
             }
         }
-    }
+    };
 
     return (
         <MicrobitServices onServicesBound={onServicesBound} />

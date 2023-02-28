@@ -10,7 +10,7 @@ const defaultInfo = '(none)';
 export default function MicroBitInfo(props: Props) {
     const [info, setInfo] = useState<string>(defaultInfo);
 
-    const onDeviceBound: BoundCallback<BluetoothDevice> = (bound) => {
+    const onDeviceBound: BoundCallback<BluetoothDevice> = bound => {
         if (bound.binding) {
             setInfo(bound.target[props.infoName] ?? defaultInfo);
         } else {

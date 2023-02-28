@@ -15,7 +15,7 @@ const buttonbstatechanged = 'buttonbstatechanged';
 
 export function MicrobitButton(props: Props) {
 
-    const onServicesBound: BoundCallback<Services> = (bound) => {
+    const onServicesBound: BoundCallback<Services> = bound => {
         const target = bound.target.buttonService;
         if (target) {
             if (bound.binding) {
@@ -41,8 +41,7 @@ export function MicrobitButton(props: Props) {
                 props.onServiceBound({ ...bound, target });
             }
         }
-
-    }
+    };
 
     return (
         <MicrobitServices onServicesBound={onServicesBound} />

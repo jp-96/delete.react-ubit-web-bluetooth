@@ -10,14 +10,14 @@ interface Props extends ServiceProps<MagnetometerService> {
 
 export function MicrobitMagnetometer(props: Props) {
     
-    const onServicesBound: BoundCallback<Services> = (bound) => {
+    const onServicesBound: BoundCallback<Services> = bound => {
         const target = bound.target.magnetometerService;
         if (target) {
             if (props.onServiceBound) {
                 props.onServiceBound({ ...bound, target});
             }
         }
-    }
+    };
 
     return (
         <MicrobitServices onServicesBound={onServicesBound} />

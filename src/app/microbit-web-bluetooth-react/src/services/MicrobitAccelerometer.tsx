@@ -15,7 +15,7 @@ const accelerometerdatachanged = 'accelerometerdatachanged';
 export function MicrobitAccelerometer(props: Props) {
     const [service, setService] = useState<AccelerometerService | undefined>(undefined);
 
-    const onServicesBound: BoundCallback<Services> = (bound) => {
+    const onServicesBound: BoundCallback<Services> = bound => {
         const target = bound.target.accelerometerService;
         if (target) {
             if (bound.binding) {
@@ -33,7 +33,7 @@ export function MicrobitAccelerometer(props: Props) {
                 props.onServiceBound({ ...bound, target });
             }
         }
-    }
+    };
 
     useEffect(() => {
         if (service && props.accelerometerPeriod) {

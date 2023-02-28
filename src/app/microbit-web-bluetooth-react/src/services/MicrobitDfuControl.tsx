@@ -10,14 +10,14 @@ interface Props extends ServiceProps<DfuControlService> {
 
 export function MicrobitDfuControl(props: Props) {
     
-    const onServicesBound: BoundCallback<Services> = (bound) => {
+    const onServicesBound: BoundCallback<Services> = bound => {
         const target = bound.target.dfuControlService;
         if (target) {
             if (props.onServiceBound) {
                 props.onServiceBound({ ...bound, target});
             }
         }
-    }
+    };
 
     return (
         <MicrobitServices onServicesBound={onServicesBound} />

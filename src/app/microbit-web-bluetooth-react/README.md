@@ -78,8 +78,8 @@ Component: `MicrobitMagnetometer`
 Component: `MicrobitTemperature`
 
 - [ ] Temperature
-- [ ] Temperature Changed Event
-- [ ] Temperature Period
+- [X] Temperature Changed Event
+- [X] Temperature Period
 
 ## UART Service
 
