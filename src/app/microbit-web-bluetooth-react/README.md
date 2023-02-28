@@ -5,7 +5,7 @@
 
 Component: `MicrobitAccelerometer`
 
-- [ ] Accelerometer Data
+- [X] (Accelerometer Data)
 - [X] Accelerometer Data Changed Event
 - [x] Accelerometer Period
 
@@ -13,9 +13,9 @@ Component: `MicrobitAccelerometer`
 
 Component: `MicrobitButton`
 
-- [ ] Button A State
+- [X] (Button A State)
 - [x] Button A State Changed Event
-- [ ] Button B State
+- [X] (Button B State)
 - [x] Button B State Changed Event
 
 ## Device Information Service
@@ -77,7 +77,7 @@ Component: `MicrobitMagnetometer`
 
 Component: `MicrobitTemperature`
 
-- [ ] Temperature
+- [X] (Temperature)
 - [X] Temperature Changed Event
 - [X] Temperature Period
 
