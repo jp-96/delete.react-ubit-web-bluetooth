@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DeviceBoundCallback, MicrobitDevice } from '../microbit-web-bluetooth-react';
+import { DeviceBoundCallback, MicrobitDevice } from '../../microbit-web-bluetooth-react';
 
 type PropertyID = 'id';
 type PropertyName = 'name';

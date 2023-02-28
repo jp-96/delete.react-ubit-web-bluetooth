@@ -1,8 +1,8 @@
 import React, { EffectCallback } from 'react';
 import { State } from 'xstate'; // yarn add --dev xstate
 import { createActorContext } from '@xstate/react'; // yarn add --dev @xstate/react
-import { createMicrobitMachine } from '../StateMachine/Machine';
-import { Connection, Context, DeviceBoundCallback, ServiceBoundCallback, ServicesBoundCallback } from '../StateMachine/MachineContext';
+import { createMicrobitMachine } from '../statemachine/Machine';
+import { Connection, Context, DeviceBoundCallback, ServiceBoundCallback, ServicesBoundCallback } from '../statemachine/MachineContext';
 
 const MicrobitActorContext = createActorContext(createMicrobitMachine(new Connection(window.navigator.bluetooth)));
 
