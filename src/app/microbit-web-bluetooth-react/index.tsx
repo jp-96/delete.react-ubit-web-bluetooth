@@ -5,5 +5,5 @@ export { CustomEventCallback, DeviceEffector, ServicesEffector, useMicrobitActor
 export { MicrobitDevice } from './src/context/MicroBitDevice';
 export { MicrobitServices } from './src/context/MicroBitServices';
 export { MicrobitAccelerometerService } from './src/services/MicrobitAccelerometerService';
-export { ButtonStateChangedCallback, MicrobitButtonService } from './src/services/MicrobitButtonService';
+export { MicrobitButtonService } from './src/services/MicrobitButtonService';
 export { BoundCallback } from './src/statemachine/MachineContext';
