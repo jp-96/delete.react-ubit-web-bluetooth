@@ -1,16 +1,17 @@
 import React, { useCallback, useEffect } from 'react';
-import { ServicesBoundCallback } from '../statemachine/MachineContext';
+import { BoundCallback } from '../statemachine/MachineContext';
 import { ServicesEffector, useMicrobitActor } from './Microbit';
+import { Services } from 'microbit-web-bluetooth';
 
 interface Props {
     //children?: any;
-    onServicesBound?: ServicesBoundCallback;
+    onServicesBound?: BoundCallback<Services>;
 }
 
 export function MicrobitServices(props: Props) {
     const [state] = useMicrobitActor();
 
-    const cb = useCallback<ServicesBoundCallback>((bound) => {
+    const cb = useCallback<BoundCallback<Services>>((bound) => {
         if (props.onServicesBound) {
             props.onServicesBound(bound);
         }

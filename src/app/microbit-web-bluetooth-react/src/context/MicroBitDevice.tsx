@@ -1,16 +1,16 @@
 import React, { useCallback, useEffect } from 'react';
-import { DeviceBoundCallback } from '../statemachine/MachineContext';
+import { BoundCallback } from '../statemachine/MachineContext';
 import { DeviceEffector, useMicrobitActor } from './Microbit';
 
 interface Props {
     //children?: any;
-    onDeviceBound?: DeviceBoundCallback;
+    onDeviceBound?: BoundCallback<BluetoothDevice>;
 }
 
 export function MicrobitDevice(props: Props) {
     const [state] = useMicrobitActor();
 
-    const cb = useCallback<DeviceBoundCallback>((bound) => {
+    const cb = useCallback<BoundCallback<BluetoothDevice>>((bound) => {
         if (props.onDeviceBound) {
             props.onDeviceBound(bound);
         }
