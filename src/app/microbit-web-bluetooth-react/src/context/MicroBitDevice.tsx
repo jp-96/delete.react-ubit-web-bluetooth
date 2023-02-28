@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { DeviceBoundCallback } from '../StateMachine/MachineContext';
+import { DeviceBoundCallback } from '../statemachine/MachineContext';
 import { DeviceEffector, useMicrobitActor } from './Microbit';
 
 interface Props {

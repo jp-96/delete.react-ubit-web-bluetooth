@@ -1,7 +1,7 @@
 import React from 'react';
-import { ServiceProps } from '../Context/Microbit';
-import { ServicesBoundCallback } from '../StateMachine/MachineContext';
-import { MicrobitServices } from '../Context/MicroBitServices';
+import { ServiceProps } from '../context/Microbit';
+import { ServicesBoundCallback } from '../statemachine/MachineContext';
+import { MicrobitServices } from '../context/MicroBitServices';
 import { ButtonService, ButtonState } from 'microbit-web-bluetooth/types/services/button';
 
 export type ButtonStateChangedCallback = (event: CustomEvent<ButtonState>) => void;
