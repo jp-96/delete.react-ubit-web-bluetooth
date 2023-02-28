@@ -15,36 +15,35 @@ const buttonbstatechanged = 'buttonbstatechanged';
 
 export function MicrobitButton(props: Props) {
 
-    const cb: BoundCallback<Services> = (bound) => {
-        const buttonService = bound.target.buttonService;
-        if (buttonService) {
+    const onServicesBound: BoundCallback<Services> = bound => {
+        const target = bound.target.buttonService;
+        if (target) {
             if (bound.binding) {
                 // button A
                 if (props.onButtonAStateChanged) {
-                    buttonService.addEventListener(buttonastatechanged, props.onButtonAStateChanged)
+                    target.addEventListener(buttonastatechanged, props.onButtonAStateChanged)
                 }
                 // button B
                 if (props.onButtonBStateChanged) {
-                    buttonService.addEventListener(buttonbstatechanged, props.onButtonBStateChanged)
+                    target.addEventListener(buttonbstatechanged, props.onButtonBStateChanged)
                 }
             } else {
                 // button A
                 if (props.onButtonAStateChanged) {
-                    buttonService.removeEventListener(buttonastatechanged, props.onButtonAStateChanged)
+                    target.removeEventListener(buttonastatechanged, props.onButtonAStateChanged)
                 }
                 // button B
                 if (props.onButtonBStateChanged) {
-                    buttonService.removeEventListener(buttonbstatechanged, props.onButtonBStateChanged)
+                    target.removeEventListener(buttonbstatechanged, props.onButtonBStateChanged)
                 }
             }
             if (props.onServiceBound) {
-                props.onServiceBound({ target: buttonService, binding: bound.binding });
+                props.onServiceBound({ ...bound, target });
             }
         }
-
-    }
+    };
 
     return (
-        <MicrobitServices onServicesBound={cb} />
+        <MicrobitServices onServicesBound={onServicesBound} />
     );
 }

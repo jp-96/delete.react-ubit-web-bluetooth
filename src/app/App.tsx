@@ -12,6 +12,7 @@ import MicroBitInfo from './custom/components/MicrobitInfo';
 import MicrobitButtonState from './custom/components/MicrobitButtonState';
 import { Services } from 'microbit-web-bluetooth';
 import { AccelerometerData, AccelerometerPeriod } from 'microbit-web-bluetooth/types/services/accelerometer';
+import MicrobitTemperatureView from './custom/components/MicrobitTemperatureView';
 
 function App() {
   const [state, send] = useMicrobitActor();
@@ -106,7 +107,8 @@ function App() {
           <br />
           <button onClick={() => setFrequency(640)}>SLOW</button>
           {`${frequency}`}
-          <button onClick={() => setFrequency(20)}>FAST</button>
+          <button onClick={() => setFrequency(20)}>FAST</button><br/>
+          TEMP: <MicrobitTemperatureView />
         </p>
         {listItems.length > 0 && <div>services:<ul>{listItems}</ul></div>}
         <p>
