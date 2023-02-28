@@ -4,7 +4,6 @@ export type GattServerDisconnectedCallback = () => void;
 
 type Bound<T> = { target: T, binding: boolean };
 export type BoundCallback<T> = (bound: Bound<T>) => void;
-export type ServicesBoundCallback = BoundCallback<Services>;
 export type ServiceBoundCallback<T> = BoundCallback<T>;
 
 type Reason<T> = { type: T, message: string; };
@@ -35,7 +34,7 @@ export class Connection {
     private deviceCallbacks: BoundCallback<BluetoothDevice>[] = [];
     private device?: BluetoothDevice;
 
-    private servicesCallbacks: ServicesBoundCallback[] = [];
+    private servicesCallbacks: BoundCallback<Services>[] = [];
     private services?: Services;
 
     public setGattServerDisconnectedCallback(cb?: GattServerDisconnectedCallback) {
@@ -98,14 +97,14 @@ export class Connection {
         }
     }
 
-    public addServicesBoundCallback(cb: ServicesBoundCallback) {
+    public addServicesBoundCallback(cb: BoundCallback<Services>) {
         this.servicesCallbacks.push(cb);
         if (this.services) {
             cb({ target: this.services, binding: true });
         }
     }
 
-    public removeServicesBoundCallback(cb: ServicesBoundCallback) {
+    public removeServicesBoundCallback(cb: BoundCallback<Services>) {
         this.servicesCallbacks = this.servicesCallbacks.filter(f => f !== cb);
     }
 
