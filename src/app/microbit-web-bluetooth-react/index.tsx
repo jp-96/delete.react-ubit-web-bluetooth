@@ -7,4 +7,4 @@ export { MicrobitDevice } from './src/context/MicroBitDevice';
 export { MicrobitServices } from './src/context/MicroBitServices';
 export { AccelerometerDataChangedCallback, MicrobitAccelerometerService } from './src/services/MicrobitAccelerometerService';
 export { ButtonStateChangedCallback, MicrobitButtonService } from './src/services/MicrobitButtonService';
-export { DeviceBoundCallback, ServiceBoundCallback, ServicesBoundCallback } from './src/statemachine/MachineContext';
+export { BoundCallback } from './src/statemachine/MachineContext';

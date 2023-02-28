@@ -3,9 +3,8 @@ import Logo from './Logo';  // logo.svg ==> Log0.tsx
 //import './App.css'; // ==> ../index.html
 import {
   AccelerometerDataChangedCallback,
+  BoundCallback,
   MicrobitAccelerometerService,
-  ServiceBoundCallback,
-  ServicesBoundCallback,
   ServicesEffector,
   useMicrobitActor
 } from './microbit-web-bluetooth-react';
@@ -13,7 +12,6 @@ import MicroBitInfo from './custom/components/MicrobitInfo';
 import MicrobitButton from './custom/components/MicrobitButton';
 import { Services } from 'microbit-web-bluetooth';
 import { AccelerometerPeriod } from 'microbit-web-bluetooth/types/services/accelerometer';
-import { ButtonService } from 'microbit-web-bluetooth/types/services/button';
 
 function App() {
   const [state, send] = useMicrobitActor();
@@ -23,7 +21,7 @@ function App() {
   const [services, setServices] = useState<Services>({});
   const [frequency, setFrequency] = useState<AccelerometerPeriod>(20);
 
-  const cb = useCallback<ServicesBoundCallback>((bound) => {
+  const cb = useCallback<BoundCallback<Services>>((bound) => {
 
     const listenerButtonA = (event: any) => {
       console.log("Button A:", `${event.type}`, `${event.detail}`);
