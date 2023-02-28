@@ -4,12 +4,12 @@ import Logo from './Logo';  // logo.svg ==> Log0.tsx
 import {
   CustomEventCallback,
   BoundCallback,
-  MicrobitAccelerometerService,
+  MicrobitAccelerometer,
   ServicesEffector,
   useMicrobitActor
 } from './microbit-web-bluetooth-react';
 import MicroBitInfo from './custom/components/MicrobitInfo';
-import MicrobitButton from './custom/components/MicrobitButton';
+import MicrobitButtonState from './custom/components/MicrobitButtonState';
 import { Services } from 'microbit-web-bluetooth';
 import { AccelerometerData, AccelerometerPeriod } from 'microbit-web-bluetooth/types/services/accelerometer';
 
@@ -92,15 +92,15 @@ function App() {
           <button onClick={() => send("CONNECT")}>CONNECT</button>
           <button onClick={() => send("DISCONNECT")}>DISCONNECT</button>
           <br />
-          name: <MicroBitInfo display="name" />
+          name: <MicroBitInfo infoName="name" />
           <br />
-          id: <MicroBitInfo display="id" />
+          id: <MicroBitInfo infoName="id" />
           <br />
-          Button A: <MicrobitButton watching='a' /> {stateA}
+          Button A: <MicrobitButtonState button='a' /> {stateA}
           <br />
-          Button B: <MicrobitButton watching='b' /> {stateB}
+          Button B: <MicrobitButtonState button='b' /> {stateB}
           <br />
-          <MicrobitAccelerometerService onAccelerometerDataChanged={cbAcc} accelerometerPeriod={frequency} />
+          <MicrobitAccelerometer onAccelerometerDataChanged={cbAcc} accelerometerPeriod={frequency} />
           <br />
           x: {acc.x}, y: {acc.y}, z: {acc.z}
           <br />

@@ -1,28 +1,26 @@
 import React, { useState } from 'react';
 import { BoundCallback, MicrobitDevice } from '../../microbit-web-bluetooth-react';
 
-type PropertyID = 'id';
-type PropertyName = 'name';
-type PropertyType = PropertyID | PropertyName;
-
 type Props = {
-    display: PropertyType;
+    infoName: 'id' | 'name';
 }
 
-export default function MicroBitInfo(props: Props) {
-    const [value, setValue] = useState<string | undefined>(undefined);
+const defaultInfo = '(none)';
 
-    const cb: BoundCallback<BluetoothDevice> = (bound) => {
+export default function MicroBitInfo(props: Props) {
+    const [info, setInfo] = useState<string>(defaultInfo);
+
+    const onDeviceBound: BoundCallback<BluetoothDevice> = (bound) => {
         if (bound.binding) {
-            setValue(bound.target[props.display]);
+            setInfo(bound.target[props.infoName] ?? defaultInfo);
         } else {
-            setValue(undefined);
+            setInfo(defaultInfo);
         }
     }
     return (
         <React.Fragment>
-            <MicrobitDevice onDeviceBound={cb} />
-            {value}
+            <MicrobitDevice onDeviceBound={onDeviceBound} />
+            {info}
         </React.Fragment>
     );
 }
