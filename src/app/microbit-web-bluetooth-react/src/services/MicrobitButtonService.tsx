@@ -1,6 +1,6 @@
 import React from 'react';
-import { CustomEventCallback, ServiceProps } from '../context/Microbit';
-import { BoundCallback } from '../statemachine/MachineContext';
+import { CustomEventCallback, ServiceProps } from '../context/MicrobitContext';
+import { BoundCallback } from '../statemachine/Context';
 import { MicrobitServices } from '../context/MicroBitServices';
 import { ButtonService, ButtonState } from 'microbit-web-bluetooth/types/services/button';
 import { Services } from 'microbit-web-bluetooth';

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
-import { BoundCallback } from '../statemachine/MachineContext';
-import { ServicesEffector, useMicrobitActor } from './Microbit';
+import { BoundCallback } from '../statemachine/Context';
+import { ServicesEffector, useMicrobitActor } from './MicrobitContext';
 import { Services } from 'microbit-web-bluetooth';
 
 interface Props {

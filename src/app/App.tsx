@@ -9,7 +9,7 @@ import {
   useMicrobitActor
 } from './microbit-web-bluetooth-react';
 import MicroBitInfo from './custom/components/MicrobitInfo';
-import MicrobitButton from './custom/components/MicrobitButton';
+import MicrobitButtonState from './custom/components/MicrobitButtonState';
 import { Services } from 'microbit-web-bluetooth';
 import { AccelerometerData, AccelerometerPeriod } from 'microbit-web-bluetooth/types/services/accelerometer';
 
@@ -96,9 +96,9 @@ function App() {
           <br />
           id: <MicroBitInfo display="id" />
           <br />
-          Button A: <MicrobitButton watching='a' /> {stateA}
+          Button A: <MicrobitButtonState watching='a' /> {stateA}
           <br />
-          Button B: <MicrobitButton watching='b' /> {stateB}
+          Button B: <MicrobitButtonState watching='b' /> {stateB}
           <br />
           <MicrobitAccelerometerService onAccelerometerDataChanged={cbAcc} accelerometerPeriod={frequency} />
           <br />
