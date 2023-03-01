@@ -11,11 +11,13 @@ export type BoundCallback<T> = (bound: Bound<T>) => void;
 
 export class Connection {
 
-    constructor(bluetooth: Bluetooth = window.navigator.bluetooth) {
+    constructor(bluetooth: Bluetooth = window.navigator.bluetooth, name: string = "micro:bit") {
         this.bluetooth = bluetooth;
+        this.name = name;
     }
 
-    bluetooth: Bluetooth;
+    private bluetooth: Bluetooth;
+    public name: string;
 
     private gattServerDisconnectedEventCallback: GattServerDisconnectedCallback = defalutGattServerDisconnectedCallback;
 
@@ -35,6 +37,7 @@ export class Connection {
     }
 
     public resetDevice() {
+        this.setServices(undefined);
         this.setDevice(undefined);
     }
 
@@ -48,7 +51,10 @@ export class Connection {
     }
 
     public disconnectGattServer() {
-        if (this.device && this.device.gatt && this.device.gatt.connected) {
+        if (this.device && this.device.gatt /*&& this.device.gatt.connected*/) {
+            if (!this.device.gatt.connected) {
+                console.log("Gatt Server has already been disconnected.")
+            }
             this.device.gatt.disconnect();
         } else {
             console.log("missing Gatt Server connection.")
@@ -58,58 +64,77 @@ export class Connection {
     public addDeviceBoundCallback(cb: BoundCallback<BluetoothDevice>) {
         this.deviceCallbacks.push(cb);
         if (this.device) {
-            cb({ target: this.device, binding: true });
+            cb({ target: this.device, binding: true }); // bind
         }
     }
 
     public removeDeviceBoundCallback(cb: BoundCallback<BluetoothDevice>) {
-        this.deviceCallbacks = this.deviceCallbacks.filter(f => f !== cb);
+        this.deviceCallbacks = this.deviceCallbacks.filter(f => {
+            if (f === cb) {
+                if (this.device) {
+                    cb({ target: this.device, binding: false }); // unbind
+                }
+                return false;
+            }
+            return true;
+        });
     }
 
-    private updateDeviceBoundCallbacksAll(bound: Bound<BluetoothDevice>) {
-        this.deviceCallbacks.map(f => f(bound));
+    private updateDeviceBoundCallbacksAll(binding: boolean): boolean {
+        const target = this.device;
+        if (target) {
+            const bound: Bound<BluetoothDevice> = { target, binding }
+            this.deviceCallbacks.forEach(f => f(bound)); // binding
+            return true;
+        }
+        return false;
     }
 
     private setDevice(device?: BluetoothDevice) {
         const gattserverdisconnected = "gattserverdisconnected";
+        this.updateDeviceBoundCallbacksAll(false); // unbind all
         if (this.device) {
-            // unbind
-            this.updateDeviceBoundCallbacksAll({ target: this.device, binding: false });
             this.device.removeEventListener(gattserverdisconnected, this.gattServerDisconnectedEventCallback);
         }
-        this.device = device;
+        this.device = device; // change
         if (this.device) {
-            // bind
             this.device.addEventListener(gattserverdisconnected, this.gattServerDisconnectedEventCallback);
-            this.updateDeviceBoundCallbacksAll({ target: this.device, binding: true });
         }
+        this.updateDeviceBoundCallbacksAll(true); // bind all
     }
 
     public addServicesBoundCallback(cb: BoundCallback<Services>) {
         this.servicesCallbacks.push(cb);
         if (this.services) {
-            cb({ target: this.services, binding: true });
+            cb({ target: this.services, binding: true }); //bind
         }
     }
 
     public removeServicesBoundCallback(cb: BoundCallback<Services>) {
-        this.servicesCallbacks = this.servicesCallbacks.filter(f => f !== cb);
+        this.servicesCallbacks = this.servicesCallbacks.filter(f => {
+            if (f === cb) {
+                if (this.services) {
+                    f({ target: this.services, binding: false }); // unbind
+                }
+                return false;
+            }
+            return true;
+        });
     }
 
-    private updateServicesBoundCallbacksAll(bound: Bound<Services>) {
-        this.servicesCallbacks.map(f => f(bound));
+    private updateServicesBoundCallbacksAll(binding: boolean) {
+        const target = this.services;
+        if (target) {
+            const bound: Bound<Services> = { target, binding };
+            this.servicesCallbacks.forEach(f => f(bound));
+        }
+        return false;
     }
 
     private setServices(services?: Services) {
-        if (this.services) {
-            // unbind
-            this.updateServicesBoundCallbacksAll({ target: this.services, binding: false });
-        }
-        this.services = services;
-        if (this.services) {
-            // bind
-            this.updateServicesBoundCallbacksAll({ target: this.services, binding: true });
-        }
+        this.updateServicesBoundCallbacksAll(false); // unbind all
+        this.services = services; // change
+        this.updateServicesBoundCallbacksAll(true); // bind all
     }
 
     public purge() {

@@ -8,7 +8,7 @@ import App from './App';
 const root = createRoot(document.getElementById('root') as Element);
 root.render(
   <StrictMode>
-    <MicrobitContextProvider>
+    <MicrobitContextProvider connectionName='Top Level uBit'>
       <App />
     </MicrobitContextProvider>
   </StrictMode>

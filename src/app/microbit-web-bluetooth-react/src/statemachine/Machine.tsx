@@ -4,12 +4,14 @@ import { Connection, Context, DisconnectedReason, RejectedReason } from "./Conte
 const rejectedReason: RejectedReason = { type: "NONE", message: "" };
 const disconnectedReason: DisconnectedReason = { type: "NONE", message: "" };
 
-export const createMicrobitMachine = (conn: Connection) => createMachine<Context>(
+export const createContext = (conn: Connection) => ({ conn, rejectedReason, disconnectedReason });
+
+export const machineWithoutContext = createMachine<Context>(
   // config
   {
     predictableActionArguments: true, // see: https://xstate.js.org/docs/guides/actions.html#actions
-    id: "mibrobit-bluetooth",
-    context: { conn, rejectedReason, disconnectedReason }, // initial context
+    id: "microbit-bluetooth",
+    // Without context, so "machineWithoutContext.withContext()" must be called. 
     initial: "init",
     invoke: {
       id: "setup-cleanup-callback",
