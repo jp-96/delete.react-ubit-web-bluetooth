@@ -8,11 +8,11 @@ import {
   ServicesEffector,
   useMicrobitActor
 } from './microbit-web-bluetooth-react';
-import MicroBitInfo from './custom/components/MicrobitInfo';
-import MicrobitButtonState from './custom/components/MicrobitButtonState';
+import MicroBitInfo from './components/MicrobitInfo';
+import MicrobitButtonState from './components/MicrobitButtonState';
 import { Services } from 'microbit-web-bluetooth';
 import { AccelerometerData, AccelerometerPeriod } from 'microbit-web-bluetooth/types/services/accelerometer';
-import MicrobitTemperatureView from './custom/components/MicrobitTemperatureView';
+import MicrobitTemperatureView from './components/MicrobitTemperatureView';
 
 function App() {
   const [state, send] = useMicrobitActor();
