@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useReducer, useState } from 'react';
 import Logo from './Logo';  // logo.svg ==> Log0.tsx
 //import './App.css'; // ==> ../index.html
+import MicrobitContextProvider from './microbit-web-bluetooth-react';
 import Microbit from './components/Microbit';
 
 function App() {
@@ -21,7 +22,20 @@ function App() {
         >
           Learn React
         </a>
-        <Microbit/>
+        <table>
+          <tr>
+            <td>
+              <MicrobitContextProvider>
+                <Microbit />
+              </MicrobitContextProvider>
+            </td>
+            <td>
+              <MicrobitContextProvider>
+                <Microbit />
+              </MicrobitContextProvider>
+            </td>
+          </tr>
+        </table>
       </header>
     </div>
   );
