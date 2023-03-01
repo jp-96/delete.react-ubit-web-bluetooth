@@ -9,7 +9,9 @@ const root = createRoot(document.getElementById('root') as Element);
 root.render(
   <StrictMode>
     <MicrobitContextProvider connectionName='Top Level uBit'>
-      <App />
+      <MicrobitContextProvider connectionName='2nd Level uBit'>
+        <App />
+      </MicrobitContextProvider>
     </MicrobitContextProvider>
   </StrictMode>
 );
