@@ -87,7 +87,7 @@ function App() {
           Learn React
         </a>
         <p>
-          {"[" + state.toStrings() + "]"}<br />
+          {state.context.conn.name + ": [" + state.toStrings() + "]"}<br />
           <button onClick={() => send("RESET")}>RESET</button>
           <button onClick={() => send("REQUEST")}>REQUEST</button>
           <button onClick={() => send("CONNECT")}>CONNECT</button>
